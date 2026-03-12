@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import './admin.css';
 import OverviewTab from '@/components/admin/OverviewTab';
 import PetsTab from '@/components/admin/PetsTab';
 import ApplicationsTab from '@/components/admin/ApplicationsTab';
@@ -225,7 +224,7 @@ export default function AdminDashboard() {
         {/* Content */}
         <div className="admin-content" key={tabKey}>
           {activeTab === 'overview' && (
-            <OverviewTab stats={stats} loading={loading} recentApps={pendingApps} onReviewApp={updateAppStatus} />
+            <OverviewTab stats={stats} loading={loading} recentApps={pendingApps} onReviewApp={updateAppStatus} onSwitchTab={switchTab} pets={pets} donations={donations} volunteers={volunteers} events={events} fosters={fosters} />
           )}
           {activeTab === 'pets' && (
             <PetsTab pets={pets} loading={loading} onAddPet={addPet} onDeletePet={deletePet} onUpdatePet={updatePet} />

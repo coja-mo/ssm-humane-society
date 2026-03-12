@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
@@ -6,6 +7,44 @@ import Icon, { IconCircle } from '@/components/ui/Icon';
 
 export default function FosterPage() {
   useScrollReveal();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', phone: '', experience: '', preferredType: 'any' });
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const [firstName, ...rest] = form.name.split(' ');
+      const res = await fetch('/api/foster', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName, lastName: rest.join(' ') || '',
+          email: form.email, phone: form.phone,
+          experience: form.experience,
+          preferredPetTypes: [form.preferredType],
+        }),
+      });
+      if (res.ok) setSubmitted(true);
+    } catch (err) { console.error(err); }
+    setSubmitting(false);
+  }
+
+  if (submitted) {
+    return (
+      <section style={{ paddingTop: '160px', paddingBottom: '100px', minHeight: '80vh' }}>
+        <div className="container text-center" style={{ maxWidth: '600px' }}>
+          <IconCircle name="home" size={80} color="var(--green-500)" bgOpacity={0.15} style={{ margin: '0 auto 24px' }} />
+          <h1 style={{ marginBottom: '16px' }}>Application <span className="text-gradient">Received!</span></h1>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '32px' }}>
+            Thank you for your interest in fostering! Our team will review your application and contact you within 3–5 business days.
+          </p>
+          <Link href="/" className="btn btn-primary">Return Home</Link>
+        </div>
+      </section>
+    );
+  }
   return (
     <>
       <section style={{ paddingTop: '120px', paddingBottom: '40px', background: 'linear-gradient(180deg, var(--blue-50) 0%, var(--bg-primary) 100%)' }}>
@@ -70,18 +109,18 @@ export default function FosterPage() {
 
             <div className="card" style={{ padding: '40px' }}>
               <h2 style={{ marginBottom: '24px', textAlign: 'center' }}>Apply to Foster</h2>
-              <form onSubmit={e => e.preventDefault()}>
+              <form onSubmit={handleSubmit}>
                 <div className="grid-2">
-                  <div className="form-group"><label className="form-label">Name</label><input className="form-input" placeholder="Your full name" /></div>
-                  <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" placeholder="you@email.com" /></div>
+                  <div className="form-group"><label className="form-label">Name *</label><input className="form-input" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="Your full name" /></div>
+                  <div className="form-group"><label className="form-label">Email *</label><input className="form-input" type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="you@email.com" /></div>
                 </div>
-                <div className="form-group"><label className="form-label">Phone</label><input className="form-input" type="tel" placeholder="(705) 555-0123" /></div>
-                <div className="form-group"><label className="form-label">Experience with animals</label><textarea className="form-input form-textarea" placeholder="Tell us about your experience..." /></div>
+                <div className="form-group"><label className="form-label">Phone</label><input className="form-input" type="tel" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="(705) 555-0123" /></div>
+                <div className="form-group"><label className="form-label">Experience with animals *</label><textarea className="form-input form-textarea" required value={form.experience} onChange={e => setForm({...form, experience: e.target.value})} placeholder="Tell us about your experience..." /></div>
                 <div className="form-group"><label className="form-label">What type of animal would you like to foster?</label>
-                  <select className="form-input form-select"><option>Dogs</option><option>Cats</option><option>Kittens</option><option>Puppies</option><option>Any</option></select>
+                  <select className="form-input form-select" value={form.preferredType} onChange={e => setForm({...form, preferredType: e.target.value})}><option value="dogs">Dogs</option><option value="cats">Cats</option><option value="kittens">Kittens</option><option value="puppies">Puppies</option><option value="any">Any</option></select>
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <Icon name="home" size={16} color="#fff" /> Submit Foster Application
+                <button type="submit" className="btn btn-primary" disabled={submitting} style={{ width: '100%', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <Icon name="home" size={16} color="#fff" /> {submitting ? 'Submitting...' : 'Submit Foster Application'}
                 </button>
               </form>
             </div>
