@@ -55,12 +55,11 @@ export default function Navbar() {
           <Link href="/" className="navbar-logo" style={{ gap: '12px' }}>
             <span style={{ 
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: '36px', height: '36px', borderRadius: '10px',
-              background: 'linear-gradient(135deg, var(--blue-400), var(--blue-600))',
-              boxShadow: '0 4px 12px rgba(41,171,226,0.3)',
-              animation: 'float 4s ease-in-out infinite'
+              width: '34px', height: '34px', borderRadius: '10px',
+              background: 'var(--blue-500)',
+              boxShadow: '0 2px 8px rgba(41,171,226,0.25)',
             }}>
-              <Icon name="paw" size={20} color="#fff" />
+              <Icon name="paw" size={18} color="#fff" />
             </span>
             <span>
               <span style={{ fontWeight: 800 }}>SSM</span>{' '}
@@ -98,12 +97,12 @@ export default function Navbar() {
             </button>
             <Link href="/donate" className="btn btn-sm" style={{ 
               borderRadius: '100px', 
-              background: 'linear-gradient(135deg, #F43F5E, #E11D48)', 
+              background: 'var(--rose-500)', 
               color: '#fff',
-              boxShadow: '0 4px 15px rgba(244,63,94,0.3)',
-              fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px'
+              boxShadow: '0 2px 8px rgba(244,63,94,0.25)',
+              fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px'
             }}>
-              <Icon name="heart" size={14} color="#fff" /> Donate
+              <Icon name="heart" size={13} color="#fff" /> Donate
             </Link>
             <Link href="/auth/login" className="navbar-cta" style={{ borderRadius: '100px' }}>
               Sign In
