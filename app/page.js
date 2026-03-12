@@ -59,8 +59,8 @@ export default function Home() {
           </div>
           <h1 style={{
             fontFamily:'var(--font-display)', fontSize:'clamp(3.2rem, 7vw, 5rem)',
-            fontWeight:800, lineHeight:1.02, marginBottom:'28px', letterSpacing:'-0.05em',
-            animation:'fadeInUp 0.8s ease 0.2s both'
+            fontWeight:800, lineHeight:1.1, marginBottom:'28px', letterSpacing:'-0.05em',
+            animation:'fadeInUp 0.8s ease 0.2s both', padding:'4px 0'
           }}>
             Every Pet Deserves a{' '}
             <span key={heroWord} className="text-gradient" style={{ display:'inline-block', animation:'fadeInUp 0.5s ease both' }}>

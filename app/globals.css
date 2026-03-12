@@ -257,7 +257,7 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
   border-color: rgba(41,171,226,0.2);
 }
 .hero-title {
-  font-size: clamp(3rem, 7vw, 5rem); font-weight: 800; line-height: 1.02;
+  font-size: clamp(3rem, 7vw, 5rem); font-weight: 800; line-height: 1.1;
   margin-bottom: 24px; animation: fadeInUp 0.8s ease 0.2s both;
   letter-spacing: -0.045em;
 }
