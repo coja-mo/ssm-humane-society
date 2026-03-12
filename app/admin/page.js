@@ -12,6 +12,8 @@ import AnnouncementsTab from '@/components/admin/AnnouncementsTab';
 import SettingsTab from '@/components/admin/SettingsTab';
 import LostFoundTab from '@/components/admin/LostFoundTab';
 import IntakeTab from '@/components/admin/IntakeTab';
+import SuppliesTab from '@/components/admin/SuppliesTab';
+import KennelsTab from '@/components/admin/KennelsTab';
 
 /* ─── SVG ICONS ─── */
 const Icons = {
@@ -39,6 +41,8 @@ const Icons = {
   check: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
   intake: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>,
   reports: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>,
+  supplies: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>,
+  kennels: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
 };
 
 const TAB_CONFIG = [
@@ -51,6 +55,8 @@ const TAB_CONFIG = [
   { id: 'fosters',       label: 'Fosters',        icon: 'fosters',       section: 'operations' },
   { id: 'volunteers',    label: 'Volunteers',     icon: 'volunteers',    section: 'operations' },
   { id: 'lostfound',     label: 'Lost & Found',   icon: 'lostfound',     section: 'operations' },
+  { id: 'supplies',      label: 'Supplies',       icon: 'supplies',      section: 'operations' },
+  { id: 'kennels',       label: 'Kennels',        icon: 'kennels',       section: 'operations' },
   { id: 'announcements', label: 'News',           icon: 'announcements', section: 'communications' },
   { id: 'messages',      label: 'Messages',       icon: 'messages',      section: 'communications' },
   { id: 'reports',       label: 'Reports',        icon: 'reports',       section: 'system' },
@@ -91,6 +97,8 @@ export default function AdminDashboard() {
   const [lostFound, setLostFound] = useState([]);
   const [intakes, setIntakes] = useState([]);
   const [reports, setReports] = useState(null);
+  const [supplies, setSupplies] = useState([]);
+  const [kennels, setKennels] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [tabKey, setTabKey] = useState(0);
@@ -103,7 +111,7 @@ export default function AdminDashboard() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [s, p, a, d, ev, f, v, an, st, u, msg, act, lf, ink, rpt] = await Promise.all([
+      const [s, p, a, d, ev, f, v, an, st, u, msg, act, lf, ink, rpt, sup, ken] = await Promise.all([
         fetch('/api/stats').then(r => r.json()).catch(() => null),
         fetch('/api/pets').then(r => r.json()).catch(() => []),
         fetch('/api/applications').then(r => r.json()).catch(() => []),
@@ -119,6 +127,8 @@ export default function AdminDashboard() {
         fetch('/api/lost-found').then(r => r.json()).catch(() => []),
         fetch('/api/intake').then(r => r.json()).catch(() => []),
         fetch('/api/reports').then(r => r.json()).catch(() => null),
+        fetch('/api/supplies').then(r => r.json()).catch(() => []),
+        fetch('/api/kennels').then(r => r.json()).catch(() => []),
       ]);
       setStats(s); setPets(Array.isArray(p) ? p : []);
       setApps(Array.isArray(a) ? a : []); setDonations(Array.isArray(d) ? d : []);
@@ -128,6 +138,7 @@ export default function AdminDashboard() {
       setMessages(Array.isArray(msg) ? msg : []); setActivity(Array.isArray(act) ? act : []);
       setLostFound(Array.isArray(lf) ? lf : []);
       setIntakes(Array.isArray(ink) ? ink : []); setReports(rpt);
+      setSupplies(Array.isArray(sup) ? sup : []); setKennels(Array.isArray(ken) ? ken : []);
     } catch (err) { console.error('Load error:', err); }
     setLoading(false);
   }, []);
@@ -182,6 +193,16 @@ export default function AdminDashboard() {
   const addIntake = async (data) => { const res = await fetch('/api/intake', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const i = await res.json(); setIntakes(prev => [i, ...prev]); } };
   const updateIntake = async (id, data) => { const res = await fetch(`/api/intake/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const i = await res.json(); setIntakes(prev => prev.map(x => x.id === id ? i : x)); } };
   const deleteIntake = async (id) => { await fetch(`/api/intake/${id}`, { method: 'DELETE' }); setIntakes(prev => prev.filter(i => i.id !== id)); };
+
+  // Supplies handlers
+  const addSupply = async (data) => { const res = await fetch('/api/supplies', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const s = await res.json(); setSupplies(prev => [s, ...prev]); } };
+  const updateSupply = async (id, data) => { const res = await fetch(`/api/supplies/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const s = await res.json(); setSupplies(prev => prev.map(x => x.id === id ? s : x)); } };
+  const deleteSupply = async (id) => { await fetch(`/api/supplies/${id}`, { method: 'DELETE' }); setSupplies(prev => prev.filter(s => s.id !== id)); };
+
+  // Kennels handlers
+  const addKennel = async (data) => { const res = await fetch('/api/kennels', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const k = await res.json(); setKennels(prev => [...prev, k]); } };
+  const updateKennel = async (id, data) => { const res = await fetch(`/api/kennels/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const k = await res.json(); setKennels(prev => prev.map(x => x.id === id ? k : x)); } };
+  const deleteKennel = async (id) => { await fetch(`/api/kennels/${id}`, { method: 'DELETE' }); setKennels(prev => prev.filter(k => k.id !== id)); };
 
   // Admin search
   const handleSearch = (q) => {
@@ -620,6 +641,16 @@ export default function AdminDashboard() {
                 </>
               )}
             </>
+          )}
+
+          {/* ═══ SUPPLIES TAB ═══ */}
+          {activeTab === 'supplies' && (
+            <SuppliesTab supplies={supplies} onAdd={addSupply} onUpdate={updateSupply} onDelete={deleteSupply} />
+          )}
+
+          {/* ═══ KENNELS TAB ═══ */}
+          {activeTab === 'kennels' && (
+            <KennelsTab kennels={kennels} pets={pets} onAdd={addKennel} onUpdate={updateKennel} onDelete={deleteKennel} />
           )}
         </div>
       </main>

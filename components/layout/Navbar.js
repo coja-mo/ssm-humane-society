@@ -55,7 +55,7 @@ export default function Navbar() {
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="main-nav">
         <div className="navbar-inner">
           <Link href="/" className="navbar-logo" style={{ gap: '0', letterSpacing: '-0.03em' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
               SSM
             </span>
             <span style={{ 

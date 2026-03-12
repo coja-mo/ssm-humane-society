@@ -58,8 +58,8 @@ export default function Home() {
             <span>Sault Ste. Marie &middot; Humane Society</span>
           </div>
           <h1 style={{
-            fontFamily:'var(--font-display)', fontSize:'clamp(2.8rem, 6vw, 4.5rem)',
-            fontWeight:800, lineHeight:1.05, marginBottom:'24px', letterSpacing:'-0.04em',
+            fontFamily:'var(--font-display)', fontSize:'clamp(3.2rem, 7vw, 5rem)',
+            fontWeight:800, lineHeight:1.02, marginBottom:'28px', letterSpacing:'-0.05em',
             animation:'fadeInUp 0.8s ease 0.2s both'
           }}>
             Every Pet Deserves a{' '}

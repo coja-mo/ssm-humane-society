@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
+/* SF Pro system font stack — no external font loading needed */
 
 :root {
   /* Core Palette — SSM Humane Society Brand */
@@ -28,8 +28,8 @@
   --transition-fast: 0.2s cubic-bezier(0.4,0,0.2,1);
   --transition-smooth: 0.4s cubic-bezier(0.16,1,0.3,1);
   --transition-bounce: 0.5s cubic-bezier(0.34,1.56,0.64,1);
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
   --nav-height: 72px;
 }
 
@@ -55,10 +55,11 @@ body {
   transition: background 0.5s ease, color 0.3s ease;
 }
 h1,h2,h3,h4,h5,h6 {
-  font-family: var(--font-display); font-weight: 700; line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display); font-weight: 700; line-height: 1.12;
+  letter-spacing: -0.025em;
 }
-h1 { letter-spacing: -0.03em; }
+h1 { font-weight: 800; letter-spacing: -0.04em; }
+h2 { font-weight: 700; letter-spacing: -0.03em; }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
@@ -256,9 +257,9 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
   border-color: rgba(41,171,226,0.2);
 }
 .hero-title {
-  font-size: clamp(2.8rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.05;
+  font-size: clamp(3rem, 7vw, 5rem); font-weight: 800; line-height: 1.02;
   margin-bottom: 24px; animation: fadeInUp 0.8s ease 0.2s both;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
 }
 .hero-subtitle {
   font-size: clamp(1rem, 2vw, 1.2rem); color: var(--text-secondary); max-width: 540px;
@@ -751,7 +752,7 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
 .featured-carousel {
   position: relative;
   overflow: hidden;
-  margin: 0 -24px; /* bleed to container edges */
+  margin: 0 -24px;
   padding: 8px 0 16px;
 }
 /* Gradient fade masks on edges */
@@ -773,30 +774,25 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
   background: linear-gradient(to left, var(--bg-primary) 0%, transparent 100%);
 }
 
-/* The scrolling track — duplicated children for seamless loop */
+/* Scrollable track — JS drives scrollLeft for auto + manual scroll */
 .featured-carousel-track {
   display: flex;
   gap: 20px;
-  width: max-content;
-  animation: carouselScroll 120s linear infinite;
+  overflow-x: auto;
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/Edge */
 }
-.featured-carousel.paused .featured-carousel-track {
-  animation-play-state: paused;
-}
+.featured-carousel-track::-webkit-scrollbar { display: none; }
 
-/* Individual card sizing inside carousel */
+/* Individual card sizing */
 .featured-carousel-card {
   flex-shrink: 0;
   width: 270px;
 }
 .featured-carousel-card .pet-card-img-wrap {
   aspect-ratio: 4/5;
-}
-
-/* Slow continuous scroll — total distance = 42 cards × (270px + 20px gap) */
-@keyframes carouselScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(calc(-50%)); }
 }
 
 /* ========== SCROLL ANIMATIONS ========== */

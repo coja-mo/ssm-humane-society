@@ -6,47 +6,100 @@ import Icon from '@/components/ui/Icon';
 import pets from '@/lib/data/pets.json';
 
 export default function FeaturedCarousel() {
-  const trackRef = useRef(null);
-  const containerRef = useRef(null);
-  const [paused, setPaused] = useState(false);
+  const scrollRef = useRef(null);
+  const autoScrollRef = useRef(true);
   const resumeTimer = useRef(null);
+  const rafRef = useRef(null);
+  const speedRef = useRef(0.6); // px per frame
 
-  // Pause auto-scroll on interaction, resume after 3s
+  // Duplicate pets for seamless infinite loop
+  const allPets = [...pets, ...pets, ...pets];
+
+  // Auto-scroll loop via requestAnimationFrame
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    // Set initial scroll to the middle set so we can scroll both directions
+    const singleSetWidth = el.scrollWidth / 3;
+    el.scrollLeft = singleSetWidth;
+
+    let lastTime = 0;
+    const tick = (time) => {
+      if (lastTime) {
+        const delta = time - lastTime;
+        if (autoScrollRef.current && delta < 100) {
+          el.scrollLeft += speedRef.current * (delta / 16);
+
+          // Infinite loop: if we've scrolled past 2 sets, jump back by 1 set
+          if (el.scrollLeft >= singleSetWidth * 2) {
+            el.scrollLeft -= singleSetWidth;
+          }
+          // If scrolled before the first set, jump forward by 1 set
+          if (el.scrollLeft <= 0) {
+            el.scrollLeft += singleSetWidth;
+          }
+        }
+      }
+      lastTime = time;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  // Pause auto-scroll and schedule resume
   const pause = useCallback(() => {
-    setPaused(true);
+    autoScrollRef.current = false;
     if (resumeTimer.current) clearTimeout(resumeTimer.current);
   }, []);
 
   const scheduleResume = useCallback(() => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current);
-    resumeTimer.current = setTimeout(() => setPaused(false), 3000);
+    resumeTimer.current = setTimeout(() => { autoScrollRef.current = true; }, 3000);
   }, []);
+
+  // Handle manual wheel scroll
+  const handleWheel = useCallback((e) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    // Convert vertical scroll to horizontal
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    }
+    pause();
+    scheduleResume();
+  }, [pause, scheduleResume]);
+
+  // Attach wheel listener with { passive: false } so we can preventDefault
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
 
   useEffect(() => {
     return () => { if (resumeTimer.current) clearTimeout(resumeTimer.current); };
   }, []);
 
-  // Duplicate pets array for seamless loop
-  const allPets = [...pets, ...pets];
-
   return (
-    <div
-      ref={containerRef}
-      className={`featured-carousel${paused ? ' paused' : ''}`}
-      onMouseEnter={pause}
-      onMouseLeave={scheduleResume}
-      onTouchStart={pause}
-      onTouchEnd={scheduleResume}
-    >
-      <div ref={trackRef} className="featured-carousel-track">
+    <div className="featured-carousel">
+      <div
+        ref={scrollRef}
+        className="featured-carousel-track"
+        onMouseEnter={pause}
+        onMouseLeave={scheduleResume}
+        onTouchStart={pause}
+        onTouchEnd={scheduleResume}
+      >
         {allPets.map((pet, i) => (
           <Link
             href={`/adopt/${pet.id}`}
             key={`${pet.id}-${i}`}
             className="pet-card featured-carousel-card"
-            onClick={(e) => {
-              // Don't prevent navigation — just let it go
-            }}
           >
             <div className="pet-card-img-wrap">
               <PetImage pet={pet} />
