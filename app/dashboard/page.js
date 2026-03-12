@@ -18,6 +18,8 @@ const TABS = [
   { id: 'applications', label: 'Applications', icon: '📝' },
   { id: 'favorites', label: 'Favorites', icon: '❤️' },
   { id: 'visits', label: 'Visits', icon: '📅' },
+  { id: 'messages', label: 'Messages', icon: '✉️' },
+  { id: 'certificates', label: 'Certificates', icon: '🏆' },
 ];
 
 function DashboardContent() {
@@ -32,9 +34,27 @@ function DashboardContent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    const u = localStorage.getItem('user');
-    if (!u) { router.push('/auth/login'); return; }
-    setUser(JSON.parse(u));
+    // Verify session via server cookie first
+    fetch('/api/auth/me')
+      .then(r => r.json())
+      .then(data => {
+        if (data.authenticated && data.user) {
+          setUser(data.user);
+          // Sync localStorage with server-verified data
+          localStorage.setItem('user', JSON.stringify(data.user));
+        } else {
+          // Fallback to localStorage
+          const u = localStorage.getItem('user');
+          if (!u) { router.push('/auth/login'); return; }
+          setUser(JSON.parse(u));
+        }
+      })
+      .catch(() => {
+        // Offline fallback — use localStorage
+        const u = localStorage.getItem('user');
+        if (!u) { router.push('/auth/login'); return; }
+        setUser(JSON.parse(u));
+      });
 
     // Show welcome banner for new registrations
     if (searchParams.get('welcome') === 'true') {
@@ -121,7 +141,11 @@ function DashboardContent() {
           {TABS.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                const redirects = { messages: '/dashboard/messages', certificates: '/dashboard/certificates', favorites: '/dashboard/favorites', visits: '/dashboard/visits' };
+                if (redirects[tab.id]) { router.push(redirects[tab.id]); return; }
+                setActiveTab(tab.id);
+              }}
               className={activeTab === tab.id ? 'pet-filter-btn active' : 'pet-filter-btn'}
               style={{ whiteSpace: 'nowrap' }}
             >
@@ -214,9 +238,11 @@ function DashboardContent() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginTop: '24px' }}>
               {[
                 { icon: '🎯', title: 'Pet Match Quiz', desc: 'Find your perfect companion', href: '/dashboard/match' },
+                { icon: '✉️', title: 'Messages', desc: 'Chat with the shelter team', href: '/dashboard/messages' },
                 { icon: '🐕', title: 'Browse Dogs', desc: 'Find your perfect pup', href: '/adopt?type=dog' },
                 { icon: '🐈', title: 'Browse Cats', desc: 'Find your purr-fect match', href: '/adopt?type=cat' },
                 { icon: '📊', title: 'My Activity', desc: 'View your adoption timeline', href: '/dashboard/activity' },
+                { icon: '🏆', title: 'Certificates', desc: 'Your adoption certificates', href: '/dashboard/certificates' },
                 { icon: '📅', title: 'Book a Visit', desc: 'Meet our animals in person', href: '/contact' },
                 { icon: '🤝', title: 'Volunteer', desc: 'Help us make a difference', href: '/volunteer' },
               ].map(action => (

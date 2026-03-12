@@ -27,96 +27,112 @@ export default function AnnouncementsTab({ announcements, onAdd, onUpdate, onDel
     setEditId(a.id); setShowAdd(true);
   };
 
-  const priorityColors = { low: 'var(--text-muted)', normal: 'var(--blue-500)', high: '#F59E0B', urgent: 'var(--rose-500)' };
+  const priorityConfig = {
+    low: { color: 'var(--text-muted)', label: 'Low' },
+    normal: { color: '#3B82F6', label: 'Normal' },
+    high: { color: '#F59E0B', label: 'High' },
+    urgent: { color: '#EF4444', label: 'Urgent' },
+  };
   const categoryIcons = { general: '📢', urgent: '🚨', event: '📅', adoption: '🐾', fundraiser: '💰' };
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '1.8rem' }}>📢 Announcements ({announcements.length})</h1>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setShowAdd(!showAdd); }}>
-          {showAdd ? '✕ Cancel' : '+ New Announcement'}
-        </button>
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Announcements</h1>
+          <p className="admin-page-subtitle">{announcements.length} announcements · {announcements.filter(a => a.isPublished).length} published</p>
+        </div>
+        <div className="admin-page-actions">
+          <button className="btn btn-primary" style={{ borderRadius: '12px', padding: '10px 24px', fontSize: '0.9rem' }}
+            onClick={() => { resetForm(); setShowAdd(!showAdd); }}>
+            {showAdd ? '✕ Cancel' : '+ New Announcement'}
+          </button>
+        </div>
       </div>
 
       {showAdd && (
-        <form onSubmit={handleSubmit} className="card" style={{ padding: '24px', marginBottom: '24px' }}>
-          <h3 style={{ marginBottom: '16px' }}>{editId ? '✏️ Edit' : '➕ New'} Announcement</h3>
-          <div className="form-group">
-            <label className="form-label">Title *</label>
-            <input className="form-input" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} />
+        <div className="admin-panel" style={{ marginBottom: '24px' }}>
+          <div className="admin-panel-header">
+            <div className="admin-panel-title"><span>{editId ? '✏️' : '➕'}</span> {editId ? 'Edit' : 'New'} Announcement</div>
           </div>
-          <div className="form-group">
-            <label className="form-label">Content *</label>
-            <textarea className="form-input form-textarea" required value={form.content} onChange={e => setForm({...form, content: e.target.value})} />
-          </div>
-          <div className="grid-3">
-            <div className="form-group">
-              <label className="form-label">Category</label>
-              <select className="form-input form-select" value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
-                <option value="general">General</option><option value="urgent">Urgent</option>
-                <option value="event">Event</option><option value="adoption">Adoption</option><option value="fundraiser">Fundraiser</option>
-              </select>
+          <form onSubmit={handleSubmit} className="admin-panel-body">
+            <div className="form-group"><label className="form-label">Title *</label>
+              <input className="form-input" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} /></div>
+            <div className="form-group"><label className="form-label">Content *</label>
+              <textarea className="form-input form-textarea" required value={form.content} onChange={e => setForm({...form, content: e.target.value})} /></div>
+            <div className="admin-form-grid admin-form-grid-3">
+              <div className="form-group"><label className="form-label">Category</label>
+                <select className="form-input form-select" value={form.category} onChange={e => setForm({...form, category: e.target.value})}>
+                  <option value="general">General</option><option value="urgent">Urgent</option>
+                  <option value="event">Event</option><option value="adoption">Adoption</option><option value="fundraiser">Fundraiser</option>
+                </select></div>
+              <div className="form-group"><label className="form-label">Priority</label>
+                <select className="form-input form-select" value={form.priority} onChange={e => setForm({...form, priority: e.target.value})}>
+                  <option value="low">Low</option><option value="normal">Normal</option>
+                  <option value="high">High</option><option value="urgent">Urgent</option>
+                </select></div>
+              <div className="form-group"><label className="form-label">Expiry Date</label>
+                <input className="form-input" type="date" value={form.expiryDate} onChange={e => setForm({...form, expiryDate: e.target.value})} /></div>
             </div>
-            <div className="form-group">
-              <label className="form-label">Priority</label>
-              <select className="form-input form-select" value={form.priority} onChange={e => setForm({...form, priority: e.target.value})}>
-                <option value="low">Low</option><option value="normal">Normal</option>
-                <option value="high">High</option><option value="urgent">Urgent</option>
-              </select>
+            <div style={{ display: 'flex', gap: '24px', marginBottom: '16px' }}>
+              <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                <input type="checkbox" checked={form.isPublished} onChange={e => setForm({...form, isPublished: e.target.checked})} /> Published</label>
+              <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                <input type="checkbox" checked={form.isPinned} onChange={e => setForm({...form, isPinned: e.target.checked})} /> Pinned</label>
             </div>
-            <div className="form-group">
-              <label className="form-label">Expiry Date</label>
-              <input className="form-input" type="date" value={form.expiryDate} onChange={e => setForm({...form, expiryDate: e.target.value})} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button type="submit" className="btn btn-primary" style={{ borderRadius: '12px' }}>{editId ? 'Update' : 'Publish'}</button>
+              <button type="button" className="btn btn-ghost" onClick={resetForm} style={{ borderRadius: '12px' }}>Cancel</button>
             </div>
-          </div>
-          <div style={{ display: 'flex', gap: '24px', marginBottom: '16px' }}>
-            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.isPublished} onChange={e => setForm({...form, isPublished: e.target.checked})} /> Published
-            </label>
-            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.isPinned} onChange={e => setForm({...form, isPinned: e.target.checked})} /> Pinned
-            </label>
-          </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button type="submit" className="btn btn-primary">{editId ? 'Update' : 'Publish'}</button>
-            <button type="button" className="btn btn-ghost" onClick={resetForm}>Cancel</button>
-          </div>
-        </form>
+          </form>
+        </div>
       )}
 
-      <div style={{ display: 'grid', gap: '12px' }}>
-        {announcements.map(a => (
-          <div key={a.id} className="card" style={{ padding: '20px', borderLeft: `4px solid ${priorityColors[a.priority] || priorityColors.normal}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <span>{categoryIcons[a.category] || '📢'}</span>
-                  <span style={{ fontWeight: 700, fontSize: '1.05rem' }}>{a.title}</span>
-                  {a.isPinned && <span className="badge badge-blue">📌 Pinned</span>}
-                  {!a.isPublished && <span className="badge badge-rose">Draft</span>}
+      <div className="admin-list">
+        {announcements.map(a => {
+          const pc = priorityConfig[a.priority] || priorityConfig.normal;
+          return (
+            <div key={a.id} className={`admin-panel admin-announcement-card priority-${a.priority || 'normal'}`} style={{ marginBottom: '8px' }}>
+              <div style={{ padding: '20px 24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '1.1rem' }}>{categoryIcons[a.category] || '📢'}</span>
+                      <span style={{ fontWeight: 700, fontSize: '1.05rem', fontFamily: 'var(--font-display)' }}>{a.title}</span>
+                      {a.isPinned && <span className="admin-status admin-status-reviewing" style={{ fontSize: '0.7rem' }}>📌 Pinned</span>}
+                      {!a.isPublished && <span className="admin-status" style={{ background: '#FFE4E6', color: 'var(--rose-600)', fontSize: '0.7rem' }}>Draft</span>}
+                      <span className="admin-status" style={{ background: `${pc.color}12`, color: pc.color, fontSize: '0.7rem' }}>
+                        {pc.label}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '10px' }}>{a.content}</p>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', gap: '12px' }}>
+                      <span>By {a.author}</span>
+                      <span>{new Date(a.createdAt).toLocaleDateString()}</span>
+                      {a.expiryDate && <span>Expires: {a.expiryDate}</span>}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                    <button className="btn btn-sm btn-ghost" onClick={() => onUpdate(a.id, { isPublished: !a.isPublished })}
+                      style={{ borderRadius: '10px', padding: '5px 14px', fontSize: '0.78rem' }}>
+                      {a.isPublished ? '📴 Unpublish' : '📲 Publish'}
+                    </button>
+                    <button className="btn btn-sm btn-ghost" onClick={() => startEdit(a)}
+                      style={{ borderRadius: '10px', padding: '5px 12px', fontSize: '0.78rem' }}>✏️</button>
+                    <button className="btn btn-sm btn-danger" onClick={() => { if (confirm('Delete?')) onDelete(a.id); }}
+                      style={{ borderRadius: '10px', padding: '5px 12px', fontSize: '0.78rem' }}>✕</button>
+                  </div>
                 </div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '8px', lineHeight: 1.6 }}>{a.content}</p>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  By {a.author} · {new Date(a.createdAt).toLocaleDateString()}
-                  {a.expiryDate && ` · Expires: ${a.expiryDate}`}
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-                <button className="btn btn-sm btn-ghost" onClick={() => onUpdate(a.id, { isPublished: !a.isPublished })}>
-                  {a.isPublished ? '📴 Unpublish' : '📲 Publish'}
-                </button>
-                <button className="btn btn-sm btn-ghost" onClick={() => startEdit(a)}>✏️</button>
-                <button className="btn btn-sm btn-danger" onClick={() => { if (confirm('Delete?')) onDelete(a.id); }} style={{ padding: '4px 8px' }}>✕</button>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {announcements.length === 0 && (
-          <div className="card" style={{ padding: '60px', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📢</div>
-            <p style={{ color: 'var(--text-muted)' }}>No announcements yet.</p>
-          </div>
+          <div className="admin-panel"><div className="admin-empty">
+            <div className="admin-empty-icon">📢</div>
+            <div className="admin-empty-title">No announcements yet</div>
+            <div className="admin-empty-text">Create your first announcement to keep your team informed.</div>
+          </div></div>
         )}
       </div>
     </>

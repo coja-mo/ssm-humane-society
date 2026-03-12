@@ -4,7 +4,6 @@ import { useState } from 'react';
 export default function FostersTab({ fosters, pets, loading, onAdd, onUpdate, onDelete }) {
   const [showAdd, setShowAdd] = useState(false);
   const [filter, setFilter] = useState('all');
-  const [expandedId, setExpandedId] = useState(null);
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', phone: '', address: '',
     experience: '', housingType: 'house', hasYard: false, hasPets: false,
@@ -23,129 +22,132 @@ export default function FostersTab({ fosters, pets, loading, onAdd, onUpdate, on
   };
 
   const statuses = ['all', 'applied', 'approved', 'active', 'completed', 'declined'];
-  const statusColors = { applied: '#F59E0B', approved: 'var(--green-500)', active: 'var(--blue-500)', completed: 'var(--text-muted)', declined: 'var(--rose-500)' };
-
   const filtered = fosters.filter(f => filter === 'all' || f.status === filter);
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '1.8rem' }}>🏡 Foster Program ({fosters.length})</h1>
-        <button className="btn btn-primary" onClick={() => setShowAdd(!showAdd)}>
-          {showAdd ? '✕ Cancel' : '+ Add Foster'}
-        </button>
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Foster Program</h1>
+          <p className="admin-page-subtitle">{fosters.length} foster families · {fosters.filter(f => f.status === 'active').length} active placements</p>
+        </div>
+        <div className="admin-page-actions">
+          <button className="btn btn-primary" style={{ borderRadius: '12px', padding: '10px 24px', fontSize: '0.9rem' }}
+            onClick={() => setShowAdd(!showAdd)}>
+            {showAdd ? '✕ Cancel' : '+ Add Foster'}
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
-      <div className="stats-grid" style={{ marginBottom: '20px' }}>
+      <div className="admin-stats" style={{ marginBottom: '20px' }}>
         {[
-          { label: 'Active Fosters', value: fosters.filter(f => f.status === 'active').length, color: 'var(--blue-500)', icon: '🏡' },
-          { label: 'Pending Approval', value: fosters.filter(f => f.status === 'applied').length, color: '#F59E0B', icon: '⏳' },
-          { label: 'Approved', value: fosters.filter(f => f.status === 'approved').length, color: 'var(--green-500)', icon: '✅' },
-          { label: 'Completed', value: fosters.filter(f => f.status === 'completed').length, color: 'var(--text-muted)', icon: '🎉' },
+          { label: 'Active Fosters', val: fosters.filter(f => f.status === 'active').length, icon: '🏡', accent: '#3B82F6', bg: '#EFF6FF' },
+          { label: 'Pending', val: fosters.filter(f => f.status === 'applied').length, icon: '⏳', accent: '#F59E0B', bg: '#FFFBEB' },
+          { label: 'Approved', val: fosters.filter(f => f.status === 'approved').length, icon: '✅', accent: '#10B981', bg: '#ECFDF5' },
+          { label: 'Completed', val: fosters.filter(f => f.status === 'completed').length, icon: '🎉', accent: '#8B5CF6', bg: '#F5F3FF' },
         ].map(s => (
-          <div key={s.label} className="stat-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <div>
-                <div className="stat-card-value" style={{ color: s.color, fontSize: '1.5rem' }}>{s.value}</div>
-                <div className="stat-card-label">{s.label}</div>
-              </div>
-              <div style={{ fontSize: '1.5rem' }}>{s.icon}</div>
-            </div>
+          <div key={s.label} className="admin-stat-card" style={{ '--stat-accent': s.accent, '--stat-bg': s.bg }}>
+            <div className="admin-stat-top"><div className="admin-stat-icon">{s.icon}</div></div>
+            <div className="admin-stat-value admin-counter">{s.val}</div>
+            <div className="admin-stat-label">{s.label}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <div className="admin-filters">
         {statuses.map(s => (
-          <button key={s} className={`btn btn-sm ${filter === s ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setFilter(s)} style={{ textTransform: 'capitalize' }}>
-            {s} {s !== 'all' && `(${fosters.filter(f => f.status === s).length})`}
+          <button key={s} className={`admin-filter-pill ${filter === s ? 'active' : ''}`} onClick={() => setFilter(s)}>
+            {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)} {s !== 'all' && `(${fosters.filter(f => f.status === s).length})`}
           </button>
         ))}
       </div>
 
       {showAdd && (
-        <form onSubmit={handleSubmit} className="card" style={{ padding: '24px', marginBottom: '24px' }}>
-          <h3 style={{ marginBottom: '16px' }}>➕ New Foster Application</h3>
-          <div className="grid-2">
-            <div className="form-group"><label className="form-label">First Name *</label>
-              <input className="form-input" required value={form.firstName} onChange={e => setForm({...form, firstName: e.target.value})} /></div>
-            <div className="form-group"><label className="form-label">Last Name *</label>
-              <input className="form-input" required value={form.lastName} onChange={e => setForm({...form, lastName: e.target.value})} /></div>
+        <div className="admin-panel" style={{ marginBottom: '24px' }}>
+          <div className="admin-panel-header">
+            <div className="admin-panel-title"><span>➕</span> New Foster Application</div>
           </div>
-          <div className="grid-3">
-            <div className="form-group"><label className="form-label">Email *</label>
-              <input className="form-input" type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
-            <div className="form-group"><label className="form-label">Phone</label>
-              <input className="form-input" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
-            <div className="form-group"><label className="form-label">Housing Type</label>
-              <select className="form-input form-select" value={form.housingType} onChange={e => setForm({...form, housingType: e.target.value})}>
-                <option value="house">House</option><option value="apartment">Apartment</option>
-                <option value="condo">Condo</option><option value="townhouse">Townhouse</option>
-              </select></div>
-          </div>
-          <div className="form-group"><label className="form-label">Address</label>
-            <input className="form-input" value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
-          <div className="form-group"><label className="form-label">Experience with animals</label>
-            <textarea className="form-input" value={form.experience} onChange={e => setForm({...form, experience: e.target.value})} style={{ minHeight: '60px' }} /></div>
-          <div style={{ display: 'flex', gap: '24px', marginBottom: '16px' }}>
-            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.hasYard} onChange={e => setForm({...form, hasYard: e.target.checked})} /> Has Yard</label>
-            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.hasPets} onChange={e => setForm({...form, hasPets: e.target.checked})} /> Has Other Pets</label>
-            <label style={{ display: 'flex', gap: '8px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.hasChildren} onChange={e => setForm({...form, hasChildren: e.target.checked})} /> Has Children</label>
-          </div>
-          <button type="submit" className="btn btn-primary">Submit Application</button>
-        </form>
+          <form onSubmit={handleSubmit} className="admin-panel-body">
+            <div className="admin-form-grid admin-form-grid-2">
+              <div className="form-group"><label className="form-label">First Name *</label>
+                <input className="form-input" required value={form.firstName} onChange={e => setForm({...form, firstName: e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">Last Name *</label>
+                <input className="form-input" required value={form.lastName} onChange={e => setForm({...form, lastName: e.target.value})} /></div>
+            </div>
+            <div className="admin-form-grid admin-form-grid-3">
+              <div className="form-group"><label className="form-label">Email *</label>
+                <input className="form-input" type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">Phone</label>
+                <input className="form-input" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">Housing Type</label>
+                <select className="form-input form-select" value={form.housingType} onChange={e => setForm({...form, housingType: e.target.value})}>
+                  <option value="house">House</option><option value="apartment">Apartment</option>
+                  <option value="condo">Condo</option><option value="townhouse">Townhouse</option>
+                </select></div>
+            </div>
+            <div className="form-group"><label className="form-label">Address</label>
+              <input className="form-input" value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
+            <div className="form-group"><label className="form-label">Experience with animals</label>
+              <textarea className="form-input" value={form.experience} onChange={e => setForm({...form, experience: e.target.value})} style={{ minHeight: '60px' }} /></div>
+            <div style={{ display: 'flex', gap: '24px', marginBottom: '16px' }}>
+              <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                <input type="checkbox" checked={form.hasYard} onChange={e => setForm({...form, hasYard: e.target.checked})} /> Has Yard</label>
+              <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                <input type="checkbox" checked={form.hasPets} onChange={e => setForm({...form, hasPets: e.target.checked})} /> Has Other Pets</label>
+              <label style={{ display: 'flex', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                <input type="checkbox" checked={form.hasChildren} onChange={e => setForm({...form, hasChildren: e.target.checked})} /> Has Children</label>
+            </div>
+            <button type="submit" className="btn btn-primary" style={{ borderRadius: '12px' }}>Submit Application</button>
+          </form>
+        </div>
       )}
 
-      <div style={{ display: 'grid', gap: '12px' }}>
+      <div className="admin-list">
         {filtered.map(f => (
-          <div key={f.id} className="card" style={{ padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--blue-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: 'var(--blue-700)', fontSize: '1rem' }}>
-                  {(f.firstName || '?')[0]}{(f.lastName || '?')[0]}
-                </div>
-                <div>
-                  <div style={{ fontWeight: 600 }}>{f.firstName} {f.lastName}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    📧 {f.email} {f.phone && `· 📞 ${f.phone}`} · 🏠 {f.housingType}
-                    {f.petName && ` · 🐾 Fostering: ${f.petName}`}
-                  </div>
-                </div>
+          <div key={f.id} className="admin-list-item">
+            <div className="admin-list-avatar" style={{ background: 'var(--blue-50)', color: 'var(--blue-700)', borderRadius: '12px' }}>
+              {(f.firstName || '?')[0]}{(f.lastName || '?')[0]}
+            </div>
+            <div className="admin-list-info">
+              <div className="admin-list-name">{f.firstName} {f.lastName}</div>
+              <div className="admin-list-meta">
+                <span>📧 {f.email}</span>
+                {f.phone && <span>📞 {f.phone}</span>}
+                <span>🏠 {f.housingType}</span>
+                {f.petName && <span>🐾 Fostering: {f.petName}</span>}
               </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span className="badge" style={{ background: `${statusColors[f.status]}20`, color: statusColors[f.status] }}>{f.status}</span>
-                <select className="form-input form-select" value={f.status}
-                  onChange={e => onUpdate(f.id, { status: e.target.value })}
-                  style={{ padding: '4px 28px 4px 8px', fontSize: '0.8rem', width: 'auto', minWidth: '100px' }}>
-                  <option value="applied">Applied</option><option value="approved">Approved</option>
-                  <option value="active">Active</option><option value="completed">Completed</option>
-                  <option value="declined">Declined</option>
+            </div>
+            <div className="admin-list-actions">
+              <span className={`admin-status admin-status-${f.status}`}>{f.status}</span>
+              <select className="form-input form-select" value={f.status}
+                onChange={e => onUpdate(f.id, { status: e.target.value })}
+                style={{ padding: '5px 28px 5px 10px', fontSize: '0.8rem', width: 'auto', minWidth: '100px', borderRadius: '10px' }}>
+                <option value="applied">Applied</option><option value="approved">Approved</option>
+                <option value="active">Active</option><option value="completed">Completed</option>
+                <option value="declined">Declined</option>
+              </select>
+              {f.status === 'approved' && (
+                <select className="form-input form-select"
+                  onChange={e => { if (e.target.value) { const pet = pets.find(p => p.id === e.target.value); onUpdate(f.id, { petId: e.target.value, petName: pet?.name, status: 'active', startDate: new Date().toISOString().split('T')[0] }); } }}
+                  style={{ padding: '5px 10px', fontSize: '0.8rem', width: 'auto', minWidth: '120px', borderRadius: '10px' }}>
+                  <option value="">Assign Pet...</option>
+                  {(pets || []).filter(p => p.status === 'available').map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
                 </select>
-                {f.status === 'approved' && (
-                  <select className="form-input form-select"
-                    onChange={e => { if (e.target.value) { const pet = pets.find(p => p.id === e.target.value); onUpdate(f.id, { petId: e.target.value, petName: pet?.name, status: 'active', startDate: new Date().toISOString().split('T')[0] }); } }}
-                    style={{ padding: '4px 8px', fontSize: '0.8rem', width: 'auto', minWidth: '120px' }}>
-                    <option value="">Assign Pet...</option>
-                    {(pets || []).filter(p => p.status === 'available').map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                )}
-                <button className="btn btn-sm btn-danger" onClick={() => { if (confirm('Delete?')) onDelete(f.id); }} style={{ padding: '4px 8px' }}>✕</button>
-              </div>
+              )}
+              <button className="btn btn-sm btn-danger" onClick={() => { if (confirm('Delete?')) onDelete(f.id); }}
+                style={{ borderRadius: '10px', padding: '5px 12px' }}>✕</button>
             </div>
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="card" style={{ padding: '60px', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🏡</div>
-            <p style={{ color: 'var(--text-muted)' }}>No foster applications yet.</p>
-          </div>
+          <div className="admin-panel"><div className="admin-empty">
+            <div className="admin-empty-icon">🏡</div>
+            <div className="admin-empty-title">No foster applications</div>
+            <div className="admin-empty-text">Foster applications will appear here as they are submitted.</div>
+          </div></div>
         )}
       </div>
     </>
