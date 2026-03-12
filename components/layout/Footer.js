@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import Icon from '@/components/ui/Icon';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -28,7 +29,10 @@ export default function Footer() {
       <div className="container">
         {/* Newsletter section */}
         <div style={{ textAlign: 'center', marginBottom: '48px', paddingBottom: '48px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Stay in the Loop 🐾</h3>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px' }}>
+            <Icon name="mail" size={24} color="var(--blue-400)" />
+            <h3 style={{ fontSize: '1.5rem' }}>Stay in the Loop</h3>
+          </div>
           <p style={{ color: '#9CA3AF', marginBottom: '20px', fontSize: '0.9rem' }}>
             Get updates on adoptable pets, events, and feel-good stories.
           </p>
@@ -42,13 +46,14 @@ export default function Footer() {
                 required
               />
               <button type="submit">
-                {subscribed ? '✓ Subscribed!' : 'Subscribe'}
+                {subscribed ? '✓ Done!' : 'Subscribe'}
               </button>
             </div>
           </form>
           {subscribed && (
             <p style={{ color: 'var(--green-500)', marginTop: '12px', fontSize: '0.85rem', animation: 'fadeInUp 0.4s ease' }}>
-              🎉 Thanks for subscribing! You&apos;ll hear from us soon.
+              <Icon name="check" size={14} color="var(--green-500)" style={{ marginRight: '6px' }} />
+              Thanks for subscribing! You&apos;ll hear from us soon.
             </p>
           )}
         </div>
@@ -56,7 +61,13 @@ export default function Footer() {
         <div className="footer-grid">
           <div>
             <div className="footer-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '1.8rem' }}>🐾</span>
+              <span style={{ 
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '32px', height: '32px', borderRadius: '8px',
+                background: 'linear-gradient(135deg, var(--blue-400), var(--blue-600))',
+              }}>
+                <Icon name="paw" size={18} color="#fff" />
+              </span>
               <span>SSM <span style={{ color: 'var(--blue-400)' }}>Humane Society</span></span>
             </div>
             <p className="footer-desc">
@@ -64,17 +75,17 @@ export default function Footer() {
             </p>
             <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
               {[
-                { href: 'https://www.facebook.com/ssmhumanesociety/', label: 'Facebook', icon: 'f' },
-                { href: 'https://www.instagram.com/ssmhumanesociety/', label: 'Instagram', icon: '📷' },
+                { href: 'https://www.facebook.com/ssmhumanesociety/', label: 'Facebook', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg> },
+                { href: 'https://www.instagram.com/ssmhumanesociety/', label: 'Instagram', icon: <Icon name="camera" size={16} color="currentColor" /> },
               ].map(s => (
-                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="btn btn-icon" 
+                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
                   style={{ 
                     background: 'rgba(255,255,255,0.08)', color: '#fff', width: '40px', height: '40px', 
                     borderRadius: '50%', transition: 'all 0.3s ease',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}
-                  onMouseEnter={e => { e.target.style.background = 'var(--blue-500)'; e.target.style.transform = 'translateY(-3px)'; }}
-                  onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.08)'; e.target.style.transform = 'none'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--blue-500)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'none'; }}
                   aria-label={s.label}
                 >
                   {s.icon}
@@ -105,11 +116,10 @@ export default function Footer() {
           <div>
             <div className="footer-title">Contact</div>
             <ul className="footer-links">
-              <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>📍 962 Second Line East</li>
-              <li style={{ paddingLeft: '26px' }}>Sault Ste. Marie, ON P6B 4K4</li>
-              <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>📞 705-949-3573</li>
-              <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>📠 705-949-0169</li>
-              <li><Link href="/contact">Contact Us →</Link></li>
+              <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><Icon name="location" size={14} color="#9CA3AF" /> 962 Second Line East</li>
+              <li style={{ paddingLeft: '22px' }}>Sault Ste. Marie, ON P6B 4K4</li>
+              <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><Icon name="phone" size={14} color="#9CA3AF" /> 705-949-3573</li>
+              <li><Link href="/contact" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Contact Us <Icon name="arrow" size={14} /></Link></li>
             </ul>
           </div>
         </div>
@@ -117,7 +127,7 @@ export default function Footer() {
           <span>© {new Date().getFullYear()} Sault Ste. Marie Humane Society. All rights reserved.</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>Proud members of their community</span>
-            <span style={{ animation: 'heartbeat 2s ease-in-out infinite' }}>💙</span>
+            <Icon name="heart" size={16} color="var(--blue-400)" style={{ animation: 'heartbeat 2s ease-in-out infinite' }} />
           </div>
         </div>
       </div>

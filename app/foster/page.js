@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
+import Icon, { IconCircle } from '@/components/ui/Icon';
 
 export default function FosterPage() {
   useScrollReveal();
@@ -9,7 +10,9 @@ export default function FosterPage() {
     <>
       <section style={{ paddingTop: '120px', paddingBottom: '40px', background: 'linear-gradient(180deg, var(--blue-50) 0%, var(--bg-primary) 100%)' }}>
         <div className="container text-center">
-          <span className="badge badge-blue" style={{ marginBottom: '12px', display: 'inline-block' }}>🏠 Make a Difference</span>
+          <span className="badge badge-blue" style={{ marginBottom: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <Icon name="home" size={14} color="var(--blue-700)" /> Make a Difference
+          </span>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', marginBottom: '12px' }}>Become a <span className="text-gradient">Foster Parent</span></h1>
           <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto' }}>
             Every year dozens of shelter animals are given a second chance, thanks to the caring hearts of our volunteer foster homes.
@@ -17,18 +20,17 @@ export default function FosterPage() {
         </div>
       </section>
 
-      {/* Impact stats */}
       <section className="section" style={{ paddingTop: '20px', paddingBottom: '40px' }}>
         <div className="container">
           <div className="grid-4 stagger" style={{ maxWidth: '800px', margin: '0 auto' }}>
             {[
-              { n: 62, label: 'Animals Fostered', icon: '🐾' },
-              { n: 48, label: 'Foster Families', icon: '🏠' },
-              { n: 95, label: '% Adoption Rate', suffix: '', icon: '✅' },
-              { n: 100, label: '% Care Covered', suffix: '', icon: '💙' },
+              { n: 62, label: 'Animals Fostered', icon: 'paw', color: 'var(--blue-500)' },
+              { n: 48, label: 'Foster Families', icon: 'home', color: 'var(--green-500)' },
+              { n: 95, label: '% Adoption Rate', suffix: '', icon: 'check', color: 'var(--blue-400)' },
+              { n: 100, label: '% Care Covered', suffix: '', icon: 'heart', color: 'var(--rose-400)' },
             ].map(s => (
               <div key={s.label} className="card card-3d" style={{ textAlign: 'center', padding: '24px' }}>
-                <div style={{ fontSize: '1.8rem', marginBottom: '8px' }}>{s.icon}</div>
+                <IconCircle name={s.icon} size={44} color={s.color} bgOpacity={0.15} style={{ margin: '0 auto 12px' }} />
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-accent)' }}>
                   <AnimatedCounter target={s.n} suffix={s.suffix ?? '+'} />
                 </div>
@@ -49,17 +51,16 @@ export default function FosterPage() {
               </p>
               <div className="grid-2" style={{ gap: '12px' }}>
                 {['We provide all food & supplies', 'Veterinary care is covered', 'Ongoing support from staff', 'Flexible commitment times', 'Save a life directly', 'Best volunteer experience'].map((b, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', transition: 'all 0.3s ease' }}>
-                    <span style={{ color: 'var(--green-500)', fontSize: '1.1rem' }}>✓</span>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)' }}>
+                    <Icon name="check" size={16} color="var(--green-500)" />
                     <span style={{ fontSize: '0.9rem' }}>{b}</span>
                   </div>
                 ))}
               </div>
             </div>
             
-            {/* Foster success story */}
             <div className="story-card" style={{ padding: '32px', marginBottom: '32px', textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '12px' }}>💕</div>
+              <IconCircle name="heart" size={56} color="var(--rose-400)" bgOpacity={0.15} style={{ margin: '0 auto 16px' }} />
               <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: '1.8', maxWidth: '500px', margin: '0 auto 16px', fontSize: '1rem' }}>
                 &ldquo;We fostered a litter of kittens and ended up adopting two! The support from the shelter team was amazing. Fostering is the most rewarding thing we&apos;ve ever done.&rdquo;
               </p>
@@ -79,7 +80,9 @@ export default function FosterPage() {
                 <div className="form-group"><label className="form-label">What type of animal would you like to foster?</label>
                   <select className="form-input form-select"><option>Dogs</option><option>Cats</option><option>Kittens</option><option>Puppies</option><option>Any</option></select>
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', borderRadius: 'var(--radius-lg)' }}>Submit Foster Application 🏠</button>
+                <button type="submit" className="btn btn-primary" style={{ width: '100%', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <Icon name="home" size={16} color="#fff" /> Submit Foster Application
+                </button>
               </form>
             </div>
           </div>

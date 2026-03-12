@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import OnboardingModal from '@/components/ui/OnboardingModal';
 
 const STATUS_LABELS = {
   submitted: { label: 'Submitted', color: 'var(--blue-500)', icon: '📝' },
@@ -28,6 +29,7 @@ function DashboardContent() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showWelcome, setShowWelcome] = useState(false);
   const [favorites, setFavorites] = useState([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     const u = localStorage.getItem('user');
@@ -49,6 +51,11 @@ function DashboardContent() {
     // Load favorites from localStorage
     const savedFavs = localStorage.getItem('favorites');
     if (savedFavs) setFavorites(JSON.parse(savedFavs));
+
+    // Show onboarding for first-time users
+    if (searchParams.get('welcome') === 'true' && !localStorage.getItem('onboarding-complete')) {
+      setShowOnboarding(true);
+    }
   }, [router, searchParams]);
 
   function handleLogout() {
@@ -69,6 +76,9 @@ function DashboardContent() {
   return (
     <section style={{ paddingTop: '100px', minHeight: '100vh', paddingBottom: '60px' }}>
       <div className="container">
+
+        {/* Onboarding Modal */}
+        {showOnboarding && <OnboardingModal onClose={() => setShowOnboarding(false)} />}
 
         {/* Welcome Banner for New Users */}
         {showWelcome && (
@@ -203,8 +213,10 @@ function DashboardContent() {
             {/* Quick Actions */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginTop: '24px' }}>
               {[
+                { icon: '🎯', title: 'Pet Match Quiz', desc: 'Find your perfect companion', href: '/dashboard/match' },
                 { icon: '🐕', title: 'Browse Dogs', desc: 'Find your perfect pup', href: '/adopt?type=dog' },
                 { icon: '🐈', title: 'Browse Cats', desc: 'Find your purr-fect match', href: '/adopt?type=cat' },
+                { icon: '📊', title: 'My Activity', desc: 'View your adoption timeline', href: '/dashboard/activity' },
                 { icon: '📅', title: 'Book a Visit', desc: 'Meet our animals in person', href: '/contact' },
                 { icon: '🤝', title: 'Volunteer', desc: 'Help us make a difference', href: '/volunteer' },
               ].map(action => (

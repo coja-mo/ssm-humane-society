@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": "1773353038415",
+    "email": "cody@antigravitysolutions.ca",
+    "password": "$2b$10$8aOHPTuPO1QWHSVZNVtnHur0PfqEYd/I20wgh2lG01cxKoeClbSeC",
+    "name": "Cody Mount",
+    "role": "admin",
+    "phone": "",
+    "createdAt": "2026-03-12T22:03:58.415Z",
+    "favorites": [],
+    "preferences": {}
+  }
+]
