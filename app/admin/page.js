@@ -11,6 +11,7 @@ import VolunteersTab from '@/components/admin/VolunteersTab';
 import AnnouncementsTab from '@/components/admin/AnnouncementsTab';
 import SettingsTab from '@/components/admin/SettingsTab';
 import LostFoundTab from '@/components/admin/LostFoundTab';
+import IntakeTab from '@/components/admin/IntakeTab';
 
 /* ─── SVG ICONS ─── */
 const Icons = {
@@ -36,19 +37,23 @@ const Icons = {
   trash: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>,
   mail: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>,
   check: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  intake: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>,
+  reports: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>,
 };
 
 const TAB_CONFIG = [
   { id: 'overview',      label: 'Overview',      icon: 'overview',      section: 'main' },
   { id: 'pets',          label: 'Pets',           icon: 'pets',          section: 'main' },
   { id: 'applications',  label: 'Applications',   icon: 'applications',  section: 'main' },
+  { id: 'intake',        label: 'Intake',         icon: 'intake',        section: 'main' },
   { id: 'donations',     label: 'Donations',      icon: 'donations',     section: 'operations' },
   { id: 'events',        label: 'Events',         icon: 'events',        section: 'operations' },
   { id: 'fosters',       label: 'Fosters',        icon: 'fosters',       section: 'operations' },
   { id: 'volunteers',    label: 'Volunteers',     icon: 'volunteers',    section: 'operations' },
+  { id: 'lostfound',     label: 'Lost & Found',   icon: 'lostfound',     section: 'operations' },
   { id: 'announcements', label: 'News',           icon: 'announcements', section: 'communications' },
   { id: 'messages',      label: 'Messages',       icon: 'messages',      section: 'communications' },
-  { id: 'lostfound',     label: 'Lost & Found',   icon: 'lostfound',     section: 'operations' },
+  { id: 'reports',       label: 'Reports',        icon: 'reports',       section: 'system' },
   { id: 'users',         label: 'Users',          icon: 'users',         section: 'system' },
   { id: 'activity',      label: 'Activity',       icon: 'activity',      section: 'system' },
   { id: 'settings',      label: 'Settings',       icon: 'settings',      section: 'system' },
@@ -84,6 +89,10 @@ export default function AdminDashboard() {
   const [messages, setMessages] = useState([]);
   const [activity, setActivity] = useState([]);
   const [lostFound, setLostFound] = useState([]);
+  const [intakes, setIntakes] = useState([]);
+  const [reports, setReports] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
   const [tabKey, setTabKey] = useState(0);
 
   const switchTab = (id) => {
@@ -94,7 +103,7 @@ export default function AdminDashboard() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [s, p, a, d, ev, f, v, an, st, u, msg, act, lf] = await Promise.all([
+      const [s, p, a, d, ev, f, v, an, st, u, msg, act, lf, ink, rpt] = await Promise.all([
         fetch('/api/stats').then(r => r.json()).catch(() => null),
         fetch('/api/pets').then(r => r.json()).catch(() => []),
         fetch('/api/applications').then(r => r.json()).catch(() => []),
@@ -108,6 +117,8 @@ export default function AdminDashboard() {
         fetch('/api/messages').then(r => r.json()).catch(() => []),
         fetch('/api/activity?limit=100').then(r => r.json()).catch(() => []),
         fetch('/api/lost-found').then(r => r.json()).catch(() => []),
+        fetch('/api/intake').then(r => r.json()).catch(() => []),
+        fetch('/api/reports').then(r => r.json()).catch(() => null),
       ]);
       setStats(s); setPets(Array.isArray(p) ? p : []);
       setApps(Array.isArray(a) ? a : []); setDonations(Array.isArray(d) ? d : []);
@@ -116,6 +127,7 @@ export default function AdminDashboard() {
       setSettings(st || {}); setUsers(Array.isArray(u) ? u : []);
       setMessages(Array.isArray(msg) ? msg : []); setActivity(Array.isArray(act) ? act : []);
       setLostFound(Array.isArray(lf) ? lf : []);
+      setIntakes(Array.isArray(ink) ? ink : []); setReports(rpt);
     } catch (err) { console.error('Load error:', err); }
     setLoading(false);
   }, []);
@@ -165,6 +177,28 @@ export default function AdminDashboard() {
 
   // Seed demo data
   const seedData = async () => { await fetch('/api/seed', { method: 'POST' }); load(); };
+
+  // Intake handlers
+  const addIntake = async (data) => { const res = await fetch('/api/intake', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const i = await res.json(); setIntakes(prev => [i, ...prev]); } };
+  const updateIntake = async (id, data) => { const res = await fetch(`/api/intake/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const i = await res.json(); setIntakes(prev => prev.map(x => x.id === id ? i : x)); } };
+  const deleteIntake = async (id) => { await fetch(`/api/intake/${id}`, { method: 'DELETE' }); setIntakes(prev => prev.filter(i => i.id !== id)); };
+
+  // Admin search
+  const handleSearch = (q) => {
+    setSearchQuery(q);
+    if (!q.trim()) { setSearchResults(null); return; }
+    const lower = q.toLowerCase();
+    const results = [];
+    pets.filter(p => (p.name || '').toLowerCase().includes(lower) || (p.breed || '').toLowerCase().includes(lower)).forEach(p => results.push({ type: 'pet', label: `🐾 ${p.name} (${p.breed})`, tab: 'pets' }));
+    apps.filter(a => (a.applicantName || '').toLowerCase().includes(lower) || (a.petName || '').toLowerCase().includes(lower)).forEach(a => results.push({ type: 'application', label: `📋 ${a.applicantName} → ${a.petName}`, tab: 'applications' }));
+    volunteers.filter(v => `${v.firstName} ${v.lastName}`.toLowerCase().includes(lower)).forEach(v => results.push({ type: 'volunteer', label: `👥 ${v.firstName} ${v.lastName}`, tab: 'volunteers' }));
+    fosters.filter(f => `${f.firstName} ${f.lastName}`.toLowerCase().includes(lower)).forEach(f => results.push({ type: 'foster', label: `🏠 ${f.firstName} ${f.lastName}`, tab: 'fosters' }));
+    donations.filter(d => (d.donorName || '').toLowerCase().includes(lower)).forEach(d => results.push({ type: 'donation', label: `💝 ${d.donorName} — $${d.amount}`, tab: 'donations' }));
+    events.filter(e => (e.title || '').toLowerCase().includes(lower)).forEach(e => results.push({ type: 'event', label: `📅 ${e.title}`, tab: 'events' }));
+    messages.filter(m => (m.name || '').toLowerCase().includes(lower) || (m.subject || '').toLowerCase().includes(lower)).forEach(m => results.push({ type: 'message', label: `💬 ${m.name}: ${m.subject || 'No subject'}`, tab: 'messages' }));
+    users.filter(u => (u.name || '').toLowerCase().includes(lower) || (u.email || '').toLowerCase().includes(lower)).forEach(u => results.push({ type: 'user', label: `👤 ${u.name} (${u.email})`, tab: 'users' }));
+    setSearchResults(results.slice(0, 10));
+  };
 
   const pendingApps = apps.filter(a => a.status === 'submitted');
   const pendingCount = pendingApps.length;
@@ -245,9 +279,23 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="admin-topbar-right">
-            <div className="admin-topbar-search">
+            <div className="admin-topbar-search" style={{ position: 'relative' }}>
               {Icons.search}
-              <input type="text" placeholder="Search anything..." />
+              <input type="text" placeholder="Search pets, people, events..." value={searchQuery} onChange={e => handleSearch(e.target.value)} />
+              {searchResults && searchResults.length > 0 && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '8px', background: 'var(--bg-primary)', border: '1.5px solid var(--border-light)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 100, overflow: 'hidden', maxHeight: '320px', overflowY: 'auto' }}>
+                  {searchResults.map((r, i) => (
+                    <button key={i} onClick={() => { switchTab(r.tab); setSearchQuery(''); setSearchResults(null); }} style={{ display: 'block', width: '100%', padding: '10px 16px', border: 'none', background: 'none', textAlign: 'left', cursor: 'pointer', fontSize: '0.85rem', borderBottom: '1px solid var(--border-light)', fontFamily: 'inherit', color: 'var(--text-primary)' }}>
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {searchResults && searchResults.length === 0 && searchQuery && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '8px', background: 'var(--bg-primary)', border: '1.5px solid var(--border-light)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.12)', zIndex: 100, padding: '16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  No results for &quot;{searchQuery}&quot;
+                </div>
+              )}
             </div>
             <button className="admin-topbar-icon-btn" title="Notifications">
               {Icons.bell}
@@ -457,6 +505,121 @@ export default function AdminDashboard() {
           {/* ═══ LOST & FOUND TAB ═══ */}
           {activeTab === 'lostfound' && (
             <LostFoundTab items={lostFound} onAdd={addLostFound} onUpdate={updateLostFound} onDelete={deleteLostFound} />
+          )}
+
+          {/* ═══ INTAKE TAB ═══ */}
+          {activeTab === 'intake' && (
+            <IntakeTab intakes={intakes} onAdd={addIntake} onUpdate={updateIntake} onDelete={deleteIntake} />
+          )}
+
+          {/* ═══ REPORTS TAB ═══ */}
+          {activeTab === 'reports' && (
+            <>
+              <div className="admin-page-header">
+                <div>
+                  <h1 className="admin-page-title">Reports & Analytics</h1>
+                  <p className="admin-page-subtitle">Organization-wide insights and trends</p>
+                </div>
+                <div className="admin-page-actions">
+                  <button onClick={() => window.open('/api/export?entity=pets&format=csv')} style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--border-light)', borderRadius: '10px', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', color: 'var(--text-secondary)' }}>
+                    {Icons.download} Export Data
+                  </button>
+                </div>
+              </div>
+
+              {reports && (
+                <>
+                  {/* Summary Cards */}
+                  <div className="admin-stats" style={{ marginBottom: '24px' }}>
+                    {[
+                      { label: 'Available Pets', val: reports.summary?.availablePets || 0, color: 'var(--blue-500)' },
+                      { label: 'Adoptions', val: reports.summary?.approvedApplications || 0, color: 'var(--green-500)' },
+                      { label: 'Pending Apps', val: reports.summary?.pendingApplications || 0, color: 'var(--amber-500)' },
+                      { label: 'Total Donations', val: `$${(reports.summary?.totalDonations || 0).toLocaleString()}`, color: 'var(--rose-500)' },
+                      { label: 'Avg Donation', val: `$${reports.summary?.avgDonation || 0}`, color: 'var(--rose-400)' },
+                      { label: 'Active Volunteers', val: reports.summary?.activeVolunteers || 0, color: 'var(--blue-600)' },
+                      { label: 'Volunteer Hours', val: reports.summary?.totalVolunteerHours || 0, color: 'var(--blue-700)' },
+                      { label: 'Active Fosters', val: reports.summary?.activeFosters || 0, color: 'var(--green-600)' },
+                    ].map(s => (
+                      <div key={s.label} className="admin-stat-card" style={{ '--stat-accent': s.color }}>
+                        <div className="admin-stat-value">{s.val}</div>
+                        <div className="admin-stat-label">{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Monthly Trends Table */}
+                  <div className="admin-panel" style={{ marginBottom: '24px' }}>
+                    <div className="admin-panel-header"><div className="admin-panel-title">📊 Monthly Trends</div></div>
+                    <div className="admin-panel-body" style={{ overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                        <thead>
+                          <tr style={{ borderBottom: '2px solid var(--border-light)' }}>
+                            <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700 }}>Month</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Apps</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Adoptions</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Donations ($)</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Intakes</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Volunteers</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Fosters</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(reports.trends || []).map(t => (
+                            <tr key={t.month} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                              <td style={{ padding: '10px 12px', fontWeight: 600 }}>{t.month}</td>
+                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.applications}</td>
+                              <td style={{ padding: '10px 12px', textAlign: 'right', color: 'var(--green-600)', fontWeight: 600 }}>{t.adoptions}</td>
+                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>${t.donationAmount?.toLocaleString()}</td>
+                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.intakes}</td>
+                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.volunteers}</td>
+                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.fosters}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Breakdowns */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                    {[{ title: '🐾 Pet Types', data: reports.breakdowns?.petTypes },
+                      { title: '📋 Pet Status', data: reports.breakdowns?.petStatus },
+                      { title: '📝 Application Status', data: reports.breakdowns?.applicationStatus },
+                      { title: '🎂 Age Distribution', data: reports.breakdowns?.ageDistribution },
+                    ].map(b => (
+                      <div key={b.title} className="admin-panel">
+                        <div className="admin-panel-header"><div className="admin-panel-title">{b.title}</div></div>
+                        <div className="admin-panel-body">
+                          {b.data && Object.entries(b.data).map(([key, val]) => (
+                            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
+                              <span style={{ textTransform: 'capitalize', fontSize: '0.85rem' }}>{key.replace(/-/g, ' ')}</span>
+                              <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{val}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Export Options */}
+                  <div className="admin-panel" style={{ marginTop: '24px' }}>
+                    <div className="admin-panel-header"><div className="admin-panel-title">📥 Export Data</div></div>
+                    <div className="admin-panel-body">
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {['pets', 'applications', 'donations', 'volunteers', 'fosters', 'events', 'messages', 'lost-found'].map(entity => (
+                          <button key={entity} onClick={() => window.open(`/api/export?entity=${entity}&format=csv`)}
+                            style={{ padding: '8px 16px', borderRadius: '8px', border: '1.5px solid var(--border-light)', background: 'var(--bg-secondary)', cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontFamily: 'inherit' }}
+                          >
+                            {Icons.download} {entity.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} CSV
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
           )}
         </div>
       </main>
