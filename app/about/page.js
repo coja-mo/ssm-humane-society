@@ -6,8 +6,9 @@ export default function AboutPage() {
   useScrollReveal();
   return (
     <>
-      <section style={{ paddingTop: '120px', paddingBottom: '60px', background: 'linear-gradient(180deg, var(--blue-50) 0%, var(--bg-primary) 100%)' }}>
-        <div className="container text-center">
+      <section style={{ paddingTop: '120px', paddingBottom: '60px', background: 'linear-gradient(180deg, var(--blue-50) 0%, var(--bg-primary) 100%)', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '0', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(41,171,226,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div className="container text-center" style={{ position: 'relative' }}>
           <span className="badge badge-blue" style={{ marginBottom: '12px', display: 'inline-block' }}>🐾 About Us</span>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '16px' }}>
             Saving Lives <span className="text-gradient">Since 1978</span>
@@ -22,6 +23,7 @@ export default function AboutPage() {
         <div className="container">
           <div className="grid-2" style={{ alignItems: 'center', gap: '64px' }}>
             <div className="reveal-left">
+              <span className="badge badge-blue" style={{ marginBottom: '16px', display: 'inline-block' }}>💙 Our Story</span>
               <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Our <span className="text-gradient">Mission</span></h2>
               <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8', marginBottom: '16px' }}>
                 We exist to protect and improve the lives of animals in our community. Through rescue operations, adoption services, foster programs, and community education, we work tirelessly to ensure every animal has the chance to live a happy, healthy life.
@@ -32,17 +34,17 @@ export default function AboutPage() {
             </div>
             <div className="reveal-right" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               {[
-                { n: 1847, label: 'Pets Adopted', icon: '🏠' },
-                { n: 250, label: 'Volunteers', icon: '🤝', suffix: '+' },
-                { n: 45, label: 'Years Serving SSM', icon: '📅', suffix: '+' },
-                { n: 100, label: 'Animals in Care', icon: '🐾', suffix: '+' },
-              ].map(s => (
-                <div key={s.label} className="card" style={{ textAlign: 'center', padding: '24px' }}>
+                { n: 1847, label: 'Pets Adopted', icon: '🏠', color: 'var(--blue-500)' },
+                { n: 250, label: 'Volunteers', icon: '🤝', suffix: '+', color: 'var(--green-500)' },
+                { n: 45, label: 'Years Serving SSM', icon: '📅', suffix: '+', color: 'var(--rose-400)' },
+                { n: 100, label: 'Animals in Care', icon: '🐾', suffix: '+', color: 'var(--blue-400)' },
+              ].map((s, i) => (
+                <div key={s.label} className="card card-3d" style={{ textAlign: 'center', padding: '28px 20px' }}>
                   <div style={{ fontSize: '2rem', marginBottom: '8px' }}>{s.icon}</div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: '800', color: 'var(--text-accent)' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 800, color: s.color }}>
                     <AnimatedCounter target={s.n} suffix={s.suffix || ''} />
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{s.label}</div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '4px' }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -50,7 +52,29 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section section-dark">
+      {/* Timeline section */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="container" style={{ maxWidth: '700px' }}>
+          <h2 className="text-center reveal" style={{ fontSize: '2rem', marginBottom: '40px' }}>Our <span className="text-gradient">Journey</span></h2>
+          <div className="timeline reveal">
+            {[
+              { year: '1978', title: 'Founded', desc: 'The Sault Ste. Marie Humane Society was established by a group of passionate animal welfare advocates.' },
+              { year: '1995', title: 'New Shelter', desc: 'Moved to our current location at 962 Second Line East, providing a larger facility for animals in need.' },
+              { year: '2010', title: 'Foster Program Launch', desc: 'Launched our foster care program, dramatically increasing our capacity to help animals.' },
+              { year: '2024', title: 'Digital Transformation', desc: 'Launched our online adoption application system and digital community platform.' },
+              { year: 'Today', title: '45+ Years of Service', desc: 'Continuing to serve the Algoma District with rescue, adoption, education, and community programs.' },
+            ].map((item, i) => (
+              <div key={i} className="timeline-item">
+                <div className="timeline-date">{item.year}</div>
+                <h4 style={{ marginBottom: '4px' }}>{item.title}</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6' }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section section-dark wave-divider-top">
         <div className="container">
           <h2 className="text-center reveal" style={{ fontSize: '2rem', marginBottom: '40px' }}>What <span style={{ color: 'var(--blue-400)' }}>We Do</span></h2>
           <div className="grid-3 stagger">
@@ -59,12 +83,12 @@ export default function AboutPage() {
               { icon: '🏠', title: 'Adoption Services', desc: 'Our application-based adoption process helps match pets with the right families. We ensure every adoption is a success through careful screening.' },
               { icon: '❤️', title: 'Foster Program', desc: 'Our foster network provides temporary homes for animals who need extra care. Foster parents play a critical role in our mission.' },
               { icon: '📚', title: 'Community Education', desc: 'We educate the public on responsible pet ownership, animal welfare, and the importance of spaying/neutering.' },
-              { icon: '🏥', title: 'Medical Care', desc: 'Every animal receives veterinary exams, vaccinations, spay/neuter surgery, and any necessary medical treatment.' },
+              { icon: '🩺', title: 'Medical Care', desc: 'Every animal receives veterinary exams, vaccinations, spay/neuter surgery, and any necessary medical treatment.' },
               { icon: '🔍', title: 'Lost & Found', desc: 'We help reunite lost pets with their families and work closely with animal control services in our community.' },
             ].map((item, i) => (
-              <div key={i} className="card" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}>
+              <div key={i} className="card card-3d" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}>
                 <div className="card-body" style={{ padding: '32px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '2.5rem', marginBottom: '16px' }}>{item.icon}</div>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '16px', animation: `float ${3 + i * 0.5}s ease-in-out infinite` }}>{item.icon}</div>
                   <h3 style={{ marginBottom: '8px' }}>{item.title}</h3>
                   <p style={{ color: '#94A3B8', lineHeight: '1.7', fontSize: '0.9rem' }}>{item.desc}</p>
                 </div>
@@ -79,18 +103,17 @@ export default function AboutPage() {
           <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Visit <span className="text-gradient">Our Shelter</span></h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>962 Second Line East, Sault Ste. Marie, ON P6B 4K4</p>
           <div className="grid-3" style={{ maxWidth: '600px', margin: '0 auto', gap: '24px' }}>
-            <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-              <div style={{ fontWeight: '700', marginBottom: '4px' }}>Mon-Sat</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>12 PM - 5 PM</div>
-            </div>
-            <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-              <div style={{ fontWeight: '700', marginBottom: '4px' }}>Sunday</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Closed</div>
-            </div>
-            <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-              <div style={{ fontWeight: '700', marginBottom: '4px' }}>Phone</div>
-              <div style={{ color: 'var(--text-accent)', fontSize: '0.9rem' }}>705-949-3573</div>
-            </div>
+            {[
+              { label: 'Mon-Sat', value: '12 PM - 5 PM', icon: '🕐' },
+              { label: 'Sunday', value: 'Closed', icon: '📅' },
+              { label: 'Phone', value: '705-949-3573', icon: '📞', accent: true },
+            ].map((item, i) => (
+              <div key={i} className="card card-3d" style={{ padding: '24px', textAlign: 'center' }}>
+                <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{item.icon}</div>
+                <div style={{ fontWeight: '700', marginBottom: '4px' }}>{item.label}</div>
+                <div style={{ color: item.accent ? 'var(--text-accent)' : 'var(--text-muted)', fontSize: '0.9rem' }}>{item.value}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

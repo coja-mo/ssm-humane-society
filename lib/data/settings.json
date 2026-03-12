@@ -1,0 +1,46 @@
+{
+  "shelterName": "Sault Ste. Marie & District Humane Society",
+  "shortName": "SSM Humane Society",
+  "address": "100 Second Line East, Sault Ste. Marie, ON P6A 2S4",
+  "phone": "(705) 949-5225",
+  "email": "info@ssmhumanesociety.ca",
+  "website": "https://ssmhumanesociety.ca",
+  "charitableNumber": "89238 0023 RR0001",
+  "hours": {
+    "monday": { "open": "10:00", "close": "16:00" },
+    "tuesday": { "open": "10:00", "close": "16:00" },
+    "wednesday": { "open": "10:00", "close": "16:00" },
+    "thursday": { "open": "10:00", "close": "16:00" },
+    "friday": { "open": "10:00", "close": "16:00" },
+    "saturday": { "open": "10:00", "close": "16:00" },
+    "sunday": { "open": "closed", "close": "closed" }
+  },
+  "adoptionFees": {
+    "dog": 350,
+    "puppy": 400,
+    "cat": 175,
+    "kitten": 200,
+    "critter": 50
+  },
+  "socialMedia": {
+    "facebook": "https://www.facebook.com/ssmhumanesociety/",
+    "instagram": "https://www.instagram.com/ssmhumanesociety/",
+    "twitter": ""
+  },
+  "adoptionProcess": [
+    "Submit an application online or in person",
+    "Our team reviews your application",
+    "Meet & greet with the animal",
+    "Home visit (if required)",
+    "Finalize adoption and take your new friend home"
+  ],
+  "fosterRequirements": [
+    "Must be 18 years or older",
+    "Have a safe, clean living space",
+    "Willing to transport animals to vet appointments",
+    "Commit to regular updates with shelter staff"
+  ],
+  "announcementBanner": null,
+  "maintenanceMode": false,
+  "updatedAt": "2026-03-12T00:00:00.000Z"
+}

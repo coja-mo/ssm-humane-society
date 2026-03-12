@@ -7,6 +7,11 @@ import pets from '@/lib/data/pets.json';
 
 const TYPES = ['all', 'dog', 'cat', 'critter'];
 const AGES = ['all', 'Puppy', 'Young', 'Adult', 'Senior'];
+const SORT_OPTIONS = [
+  { value: 'name', label: 'Name' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'oldest', label: 'Longest Waiting' },
+];
 
 export default function AdoptPage() {
   useScrollReveal();
@@ -14,9 +19,11 @@ export default function AdoptPage() {
   const [ageFilter, setAgeFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [favorites, setFavorites] = useState([]);
+  const [viewMode, setViewMode] = useState('grid');
+  const [sort, setSort] = useState('name');
 
   const filtered = useMemo(() => {
-    return pets.filter(p => {
+    let result = pets.filter(p => {
       if (typeFilter !== 'all' && p.type !== typeFilter) return false;
       if (ageFilter !== 'all' && p.age !== ageFilter) return false;
       if (search) {
@@ -25,7 +32,11 @@ export default function AdoptPage() {
       }
       return true;
     });
-  }, [typeFilter, ageFilter, search]);
+    if (sort === 'name') result.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sort === 'newest') result.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+    else if (sort === 'oldest') result.sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded));
+    return result;
+  }, [typeFilter, ageFilter, search, sort]);
 
   function toggleFav(id) {
     setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
@@ -33,8 +44,10 @@ export default function AdoptPage() {
 
   return (
     <>
-      <section style={{ paddingTop: '120px', paddingBottom: '40px', background: 'linear-gradient(180deg, var(--blue-50) 0%, var(--bg-primary) 100%)' }}>
-        <div className="container text-center">
+      <section style={{ paddingTop: '120px', paddingBottom: '40px', background: 'linear-gradient(180deg, var(--blue-50) 0%, var(--bg-primary) 100%)', position: 'relative', overflow: 'hidden' }}>
+        {/* Aurora accent */}
+        <div style={{ position: 'absolute', top: '-50%', right: '-20%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(41,171,226,0.08) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div className="container text-center" style={{ position: 'relative' }}>
           <span className="badge badge-blue" style={{ marginBottom: '12px', display: 'inline-block' }}>🐾 {pets.length} Pets Available</span>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '12px' }}>
             Find Your <span className="text-gradient">Furever Friend</span>
@@ -48,13 +61,13 @@ export default function AdoptPage() {
       <section className="section" style={{ paddingTop: '20px' }}>
         <div className="container">
           {/* Filters */}
-          <div className="pet-filters reveal">
+          <div className="reveal" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', padding: '20px 0', marginBottom: '16px' }}>
             {TYPES.map(t => (
               <button key={t} className={`pet-filter-btn ${typeFilter === t ? 'active' : ''}`} onClick={() => setTypeFilter(t)}>
                 {t === 'all' ? '🐾 All' : t === 'dog' ? '🐕 Dogs' : t === 'cat' ? '🐈 Cats' : '🐦 Critters'}
               </button>
             ))}
-            <div style={{ width: '1px', height: '32px', background: 'var(--border-light)', margin: '0 8px' }} />
+            <div style={{ width: '1px', height: '32px', background: 'var(--border-light)', margin: '0 4px' }} />
             {AGES.map(a => (
               <button key={a} className={`pet-filter-btn ${ageFilter === a ? 'active' : ''}`} onClick={() => setAgeFilter(a)} style={{ fontSize: '0.85rem', padding: '8px 16px' }}>
                 {a === 'all' ? 'All Ages' : a}
@@ -65,22 +78,40 @@ export default function AdoptPage() {
             />
           </div>
 
-          {/* Results count */}
-          <div className="reveal" style={{ marginBottom: '24px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            Showing <strong style={{ color: 'var(--text-primary)' }}>{filtered.length}</strong> of {pets.length} pets
+          {/* Toolbar: count, sort, view toggle */}
+          <div className="reveal" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              Showing <strong style={{ color: 'var(--text-primary)' }}>{filtered.length}</strong> of {pets.length} pets
+              {favorites.length > 0 && <span style={{ marginLeft: '16px', color: 'var(--rose-500)' }}>❤️ {favorites.length} saved</span>}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <select 
+                value={sort} onChange={e => setSort(e.target.value)}
+                style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', background: 'var(--bg-card)', color: 'var(--text-primary)', fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <div className="view-toggle">
+                {['grid', 'list'].map(v => (
+                  <button key={v} className={`view-toggle-btn ${viewMode === v ? 'active' : ''}`} onClick={() => setViewMode(v)}>
+                    {v === 'grid' ? '▦' : '☰'}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Pet Grid */}
+          {/* Pet Display */}
           {filtered.length === 0 ? (
             <div className="text-center" style={{ padding: '80px 0', color: 'var(--text-muted)' }}>
               <div style={{ fontSize: '4rem', marginBottom: '16px' }}>😿</div>
               <h3>No pets found matching your criteria</h3>
               <p>Try adjusting your filters or search.</p>
             </div>
-          ) : (
+          ) : viewMode === 'grid' ? (
             <div className="pet-grid">
               {filtered.map((pet, i) => (
-                <div key={pet.id} className="pet-card" style={{ animationDelay: `${i * 0.05}s` }}>
+                <div key={pet.id} className="pet-card card-3d" style={{ animationDelay: `${i * 0.05}s` }}>
                   <Link href={`/adopt/${pet.id}`}>
                     <div className="pet-card-img-wrap">
                       <PetImage pet={pet} />
@@ -103,15 +134,45 @@ export default function AdoptPage() {
                       ))}
                     </div>
                     <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
-                      <Link href={`/adopt/${pet.id}`} className="btn btn-sm btn-primary" style={{ flex: 1 }}>
+                      <Link href={`/adopt/${pet.id}`} className="btn btn-sm btn-primary" style={{ flex: 1, borderRadius: 'var(--radius-md)' }}>
                         Meet {pet.name.split(' ')[0]}
                       </Link>
-                      <Link href={`/apply/${pet.type}`} className="btn btn-sm btn-secondary" style={{ flex: 1 }}>
+                      <Link href={`/apply/${pet.type}`} className="btn btn-sm btn-secondary" style={{ flex: 1, borderRadius: 'var(--radius-md)' }}>
                         Apply
                       </Link>
                     </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gap: '16px' }}>
+              {filtered.map((pet) => (
+                <Link href={`/adopt/${pet.id}`} key={pet.id} className="pet-list-card">
+                  <div style={{ width: '160px', minHeight: '120px', flexShrink: 0, overflow: 'hidden' }}>
+                    <PetImage pet={pet} />
+                  </div>
+                  <div className="pet-list-card-body">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700 }}>{pet.name}</h3>
+                      <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>Available</span>
+                    </div>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '8px' }}>{pet.breed} · {pet.age} · {pet.gender}</p>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6' }}>{pet.description.slice(0, 120)}...</p>
+                    <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+                      {pet.traits.slice(0, 4).map(t => (
+                        <span key={t} className="badge badge-outline" style={{ fontSize: '0.7rem' }}>{t.replace(/-/g, ' ')}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn-icon"
+                    onClick={e => { e.preventDefault(); toggleFav(pet.id); }}
+                    style={{ alignSelf: 'center', marginRight: '16px', fontSize: '1.2rem', flexShrink: 0 }}
+                  >
+                    {favorites.includes(pet.id) ? '❤️' : '🤍'}
+                  </button>
+                </Link>
               ))}
             </div>
           )}
