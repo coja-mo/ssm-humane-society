@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/foster', label: 'Foster' },
   { href: '/volunteer', label: 'Volunteer' },
   { href: '/events', label: 'Events' },
+  { href: '/lost-found', label: 'Lost & Found' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -21,6 +22,7 @@ const MOBILE_ICONS = {
   '/foster': 'home',
   '/volunteer': 'people',
   '/events': 'calendar',
+  '/lost-found': 'search',
   '/contact': 'mail',
 };
 
@@ -52,18 +54,16 @@ export default function Navbar() {
     <>
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="main-nav">
         <div className="navbar-inner">
-          <Link href="/" className="navbar-logo" style={{ gap: '12px' }}>
-            <span style={{ 
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: '34px', height: '34px', borderRadius: '10px',
-              background: 'var(--blue-500)',
-              boxShadow: '0 2px 8px rgba(41,171,226,0.25)',
-            }}>
-              <Icon name="paw" size={18} color="#fff" />
+          <Link href="/" className="navbar-logo" style={{ gap: '0', letterSpacing: '-0.03em' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+              SSM
             </span>
-            <span>
-              <span style={{ fontWeight: 800 }}>SSM</span>{' '}
-              <span className="text-gradient" style={{ fontWeight: 700 }}>Humane Society</span>
+            <span style={{ 
+              width: '1px', height: '18px', background: 'var(--border-light)', 
+              margin: '0 10px', display: 'inline-block', verticalAlign: 'middle' 
+            }} />
+            <span style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: '0.88rem', color: 'var(--text-secondary)', letterSpacing: '0.01em' }}>
+              Humane Society
             </span>
           </Link>
 

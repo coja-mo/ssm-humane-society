@@ -18,12 +18,10 @@ export default function Footer() {
 
   return (
     <footer className="footer" id="site-footer" style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Aurora wave accent */}
+      {/* Subtle accent line */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
-        background: 'linear-gradient(90deg, var(--blue-400), var(--green-500), var(--blue-600), var(--rose-400))',
-        backgroundSize: '300% 100%',
-        animation: 'gradientShift 6s ease infinite'
+        position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
+        background: 'linear-gradient(90deg, transparent, rgba(41,171,226,0.3), transparent)',
       }} />
 
       <div className="container">
@@ -60,15 +58,9 @@ export default function Footer() {
 
         <div className="footer-grid">
           <div>
-            <div className="footer-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ 
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: '32px', height: '32px', borderRadius: '8px',
-                background: 'linear-gradient(135deg, var(--blue-400), var(--blue-600))',
-              }}>
-                <Icon name="paw" size={18} color="#fff" />
-              </span>
-              <span>SSM <span style={{ color: 'var(--blue-400)' }}>Humane Society</span></span>
+            <div className="footer-brand">
+              <span style={{ fontWeight: 800 }}>SSM</span>{' '}
+              <span style={{ color: '#8896A7', fontWeight: 500, fontFamily: 'var(--font-body)' }}>Humane Society</span>
             </div>
             <p className="footer-desc">
               The Sault Ste. Marie Humane Society is committed to improving the lives of animals through rescue, adoption, and education. Together, we can make a difference.

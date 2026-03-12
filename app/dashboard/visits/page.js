@@ -1,170 +1,206 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-const MOCK_VISITS = [
-  {
-    id: '1', petName: 'Luna', petBreed: 'Domestic Shorthair', petEmoji: '🐱',
-    date: '2026-03-15', time: '10:00 AM', status: 'confirmed',
-    location: 'SSM Humane Society - Cat Wing', notes: 'Please arrive 10 minutes early.',
-  },
-  {
-    id: '2', petName: 'Buddy', petBreed: 'Labrador Mix', petEmoji: '🐕',
-    date: '2026-03-18', time: '2:00 PM', status: 'pending',
-    location: 'SSM Humane Society - Dog Yard', notes: 'Weather permitting. Indoor alternative available.',
-  },
-];
-
-const STATUS_MAP = {
-  confirmed: { label: 'Confirmed', color: 'var(--green-500)', icon: '✅' },
-  pending: { label: 'Pending', color: '#F59E0B', icon: '⏳' },
-  completed: { label: 'Completed', color: 'var(--blue-500)', icon: '🎉' },
-  cancelled: { label: 'Cancelled', color: 'var(--rose-500)', icon: '❌' },
-};
+import Link from 'next/link';
+import Icon, { IconCircle } from '@/components/ui/Icon';
 
 export default function VisitsPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [pets, setPets] = useState([]);
+  const [visits, setVisits] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    date: '', time: '', purpose: 'meet-pets', petId: '', petName: '', notes: '',
+  });
 
   useEffect(() => {
-    const u = localStorage.getItem('user');
-    if (!u) { router.push('/auth/login'); return; }
-    setUser(JSON.parse(u));
+    fetch('/api/auth/me').then(r => r.json()).then(data => {
+      if (data.authenticated) {
+        setUser(data.user);
+        setForm(f => ({ ...f, visitorName: data.user.name, visitorEmail: data.user.email }));
+      } else {
+        const u = localStorage.getItem('user');
+        if (!u) { router.push('/auth/login'); return; }
+        const parsed = JSON.parse(u);
+        setUser(parsed);
+        setForm(f => ({ ...f, visitorName: parsed.name, visitorEmail: parsed.email }));
+      }
+    }).catch(() => router.push('/auth/login'));
+
+    fetch('/api/pets').then(r => r.json()).then(data => setPets(Array.isArray(data) ? data.filter(p => p.status === 'available') : [])).catch(() => {});
+    fetch('/api/visits').then(r => r.json()).then(data => setVisits(Array.isArray(data) ? data : [])).catch(() => {});
   }, [router]);
 
-  if (!user) return null;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/visits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, visitorName: user?.name, visitorEmail: user?.email }),
+      });
+      if (res.ok) setSubmitted(true);
+    } catch (err) { console.error(err); }
+    setSubmitting(false);
+  };
+
+  // Get only the current user's visits
+  const myVisits = visits.filter(v => v.visitorEmail === user?.email);
+
+  // Generate available time slots
+  const today = new Date();
+  const minDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString().split('T')[0];
+  const maxDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30).toISOString().split('T')[0];
+
+  if (submitted) {
+    return (
+      <section style={{ paddingTop: '160px', paddingBottom: '100px', minHeight: '80vh' }}>
+        <div className="container text-center" style={{ maxWidth: '600px' }}>
+          <IconCircle name="check" size={80} color="var(--green-500)" bgOpacity={0.15} style={{ margin: '0 auto 24px' }} />
+          <h1 style={{ marginBottom: '16px' }}>Visit <span className="text-gradient">Booked!</span></h1>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '16px' }}>
+            Your visit is confirmed for <strong>{form.date}</strong> at <strong>{form.time}</strong>.
+          </p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '32px' }}>
+            We&apos;ll send a reminder to {user?.email}. Please arrive 5 minutes early.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <Link href="/dashboard" className="btn btn-primary">Back to Dashboard</Link>
+            <button onClick={() => setSubmitted(false)} className="btn" style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--border-light)' }}>Book Another</button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section style={{ paddingTop: '100px', minHeight: '100vh', paddingBottom: '60px' }}>
-      <div className="container">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontSize: '0.88rem' }}>
-          <Link href="/dashboard" style={{ color: 'var(--text-muted)' }}>Dashboard</Link>
-          <span style={{ color: 'var(--text-muted)' }}>/</span>
-          <span style={{ fontWeight: '600' }}>Visits</span>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            <h1 style={{ fontSize: '2rem', marginBottom: '4px' }}>📅 My Visits</h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Scheduled visits to meet your potential new family members</p>
+    <>
+      <section style={{ paddingTop: '120px', paddingBottom: '60px' }}>
+        <div className="container" style={{ maxWidth: '800px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <span className="badge badge-blue" style={{ marginBottom: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Icon name="calendar" size={14} color="var(--blue-700)" /> Schedule a Visit
+            </span>
+            <h1>Book a <span className="text-gradient">Shelter Visit</span></h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '12px', maxWidth: '500px', margin: '12px auto 0' }}>
+              Come meet our animals in person! Schedule a time to visit and find your new best friend.
+            </p>
           </div>
-          <Link href="/contact" className="btn btn-primary btn-sm" style={{ borderRadius: '100px' }}>
-            📞 Schedule a Visit
-          </Link>
-        </div>
 
-        {/* Upcoming Visits */}
-        {MOCK_VISITS.length > 0 ? (
-          <>
-            <h2 style={{ fontSize: '1.2rem', marginBottom: '16px', fontWeight: '700' }}>Upcoming</h2>
-            <div style={{ display: 'grid', gap: '16px', marginBottom: '40px' }}>
-              {MOCK_VISITS.map(visit => {
-                const st = STATUS_MAP[visit.status] || STATUS_MAP.pending;
-                const d = new Date(visit.date);
-                const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
-                const dateStr = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          {/* Visit Form */}
+          <div className="card" style={{ padding: '40px', marginBottom: '40px' }}>
+            <h2 style={{ marginBottom: '24px' }}>
+              <Icon name="calendar" size={20} color="var(--blue-500)" /> Select a Date & Time
+            </h2>
+            <form onSubmit={handleSubmit}>
+              <div className="grid-2" style={{ marginBottom: '20px' }}>
+                <div className="form-group">
+                  <label className="form-label">Visit Date *</label>
+                  <input className="form-input" type="date" required min={minDate} max={maxDate} value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Preferred Time *</label>
+                  <select className="form-input form-select" required value={form.time} onChange={e => setForm({...form, time: e.target.value})}>
+                    <option value="">Select a time</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="10:30 AM">10:30 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="11:30 AM">11:30 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="1:30 PM">1:30 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="2:30 PM">2:30 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="3:30 PM">3:30 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                  </select>
+                </div>
+              </div>
 
-                return (
-                  <div key={visit.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', gap: '0' }}>
-                      {/* Date Side */}
-                      <div style={{
-                        background: 'linear-gradient(135deg, var(--blue-500), var(--green-500))',
-                        color: '#fff', padding: '24px 28px', minWidth: '120px',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        textAlign: 'center',
-                      }}>
-                        <div style={{ fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.8 }}>
-                          {d.toLocaleDateString('en-US', { month: 'short' })}
-                        </div>
-                        <div style={{ fontSize: '2.5rem', fontWeight: '800', lineHeight: 1 }}>
-                          {d.getDate()}
-                        </div>
-                        <div style={{ fontSize: '0.72rem', fontWeight: '500', opacity: 0.8, marginTop: '2px' }}>
-                          {dayName}
-                        </div>
-                      </div>
+              <div className="grid-2" style={{ marginBottom: '20px' }}>
+                <div className="form-group">
+                  <label className="form-label">Purpose of Visit</label>
+                  <select className="form-input form-select" value={form.purpose} onChange={e => setForm({...form, purpose: e.target.value})}>
+                    <option value="meet-pets">Meet Adoptable Pets</option>
+                    <option value="specific-pet">Visit a Specific Pet</option>
+                    <option value="volunteer">Volunteer Orientation</option>
+                    <option value="foster-pickup">Foster Pickup</option>
+                    <option value="donation-dropoff">Donation Drop-off</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                {form.purpose === 'specific-pet' && (
+                  <div className="form-group">
+                    <label className="form-label">Which Pet?</label>
+                    <select className="form-input form-select" value={form.petName} onChange={e => setForm({...form, petName: e.target.value})}>
+                      <option value="">Select a pet</option>
+                      {pets.map(p => <option key={p.id} value={p.name}>{p.name} ({p.type} • {p.breed})</option>)}
+                    </select>
+                  </div>
+                )}
+              </div>
 
-                      {/* Details */}
-                      <div style={{ flex: 1, padding: '24px 28px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', gap: '12px', flexWrap: 'wrap' }}>
-                          <div>
-                            <div style={{ fontWeight: '800', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              {visit.petEmoji} Meet {visit.petName}
-                            </div>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{visit.petBreed}</div>
-                          </div>
-                          <span className="badge" style={{ background: `${st.color}15`, color: st.color }}>
-                            {st.icon} {st.label}
-                          </span>
-                        </div>
+              <div className="form-group" style={{ marginBottom: '24px' }}>
+                <label className="form-label">Notes (optional)</label>
+                <textarea className="form-input form-textarea" value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} placeholder="Anything we should know? Special accommodations, bringing kids, etc." />
+              </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px', fontSize: '0.88rem' }}>
-                          <div>
-                            <div style={{ fontSize: '0.72rem', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '2px' }}>Time</div>
-                            <div style={{ fontWeight: '600' }}>🕐 {visit.time}</div>
-                          </div>
-                          <div>
-                            <div style={{ fontSize: '0.72rem', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '2px' }}>Location</div>
-                            <div style={{ fontWeight: '600' }}>📍 {visit.location}</div>
-                          </div>
-                        </div>
+              <button type="submit" className="btn btn-primary" disabled={submitting} style={{ width: '100%', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <Icon name="calendar" size={16} color="#fff" /> {submitting ? 'Booking...' : 'Book Visit'}
+              </button>
+            </form>
+          </div>
 
-                        {visit.notes && (
-                          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', marginBottom: '16px' }}>
-                            💡 {visit.notes}
-                          </div>
-                        )}
-
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button className="btn btn-primary btn-sm" style={{ borderRadius: '100px' }}>
-                            📍 Get Directions
-                          </button>
-                          <button className="btn btn-ghost btn-sm" style={{ borderRadius: '100px' }}>
-                            📅 Add to Calendar
-                          </button>
-                        </div>
+          {/* Previous Visits */}
+          {myVisits.length > 0 && (
+            <div className="card" style={{ padding: '32px' }}>
+              <h3 style={{ marginBottom: '20px' }}>Your Scheduled Visits</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {myVisits.map(v => (
+                  <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}>
+                    <IconCircle name="calendar" size={40} color="var(--blue-500)" bgOpacity={0.1} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600 }}>{v.date} at {v.time}</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                        {v.purpose === 'specific-pet' ? `Visiting ${v.petName}` : v.purpose.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Tips Card */}
-            <div className="card" style={{ padding: '28px', background: 'linear-gradient(135deg, rgba(59,130,246,0.04), rgba(16,185,129,0.04))' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', marginBottom: '16px' }}>📋 Visit Day Tips</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                {[
-                  { icon: '⏰', tip: 'Arrive 10 minutes early to complete paperwork' },
-                  { icon: '👨‍👩‍👧', tip: 'Bring all household members who will interact with the pet' },
-                  { icon: '🐕', tip: 'If you have other pets, let us know for a meet & greet' },
-                  { icon: '❓', tip: 'Prepare a list of questions about the pet\'s care' },
-                ].map(t => (
-                  <div key={t.tip} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '0.85rem' }}>
-                    <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{t.icon}</span>
-                    <span style={{ color: 'var(--text-secondary)' }}>{t.tip}</span>
+                    <span style={{ background: 'var(--green-100)', color: 'var(--green-800)', padding: '4px 12px', borderRadius: '100px', fontSize: '0.78rem', fontWeight: 600 }}>
+                      {v.status || 'Confirmed'}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
-          </>
-        ) : (
-          <div className="card" style={{ padding: '80px 20px', textAlign: 'center' }}>
-            <div style={{ fontSize: '5rem', marginBottom: '20px', animation: 'float 4s ease-in-out infinite' }}>📅</div>
-            <h3 style={{ fontSize: '1.3rem', marginBottom: '8px' }}>No visits scheduled</h3>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '440px', margin: '0 auto 28px' }}>
-              Once your application is approved, we&apos;ll schedule a visit for you. You can also contact us to arrange one!
-            </p>
-            <Link href="/contact" className="btn btn-primary" style={{ borderRadius: '100px' }}>📞 Contact Us</Link>
-          </div>
-        )}
+          )}
 
-        <div style={{ marginTop: '24px' }}>
-          <Link href="/dashboard" className="btn btn-ghost btn-sm">← Back to Dashboard</Link>
+          {/* Info Cards */}
+          <div className="grid-2" style={{ marginTop: '40px' }}>
+            <div className="card" style={{ padding: '28px', textAlign: 'center' }}>
+              <IconCircle name="clock" size={48} color="var(--blue-500)" bgOpacity={0.1} style={{ margin: '0 auto 12px' }} />
+              <h3 style={{ fontSize: '1rem', marginBottom: '8px' }}>Shelter Hours</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                Mon–Fri: 10am–5pm<br />
+                Sat: 10am–4pm<br />
+                Sun: 12pm–4pm
+              </p>
+            </div>
+            <div className="card" style={{ padding: '28px', textAlign: 'center' }}>
+              <IconCircle name="location" size={48} color="var(--green-500)" bgOpacity={0.1} style={{ margin: '0 auto 12px' }} />
+              <h3 style={{ fontSize: '1rem', marginBottom: '8px' }}>Location</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                SSM Humane Society<br />
+                175 Old Garden River Rd<br />
+                Sault Ste. Marie, ON
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
