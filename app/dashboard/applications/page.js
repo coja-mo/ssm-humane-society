@@ -266,6 +266,30 @@ export default function ApplicationsPage() {
               </div>
             </div>
           </div>
+          {/* Process FAQ */}
+          <div className="reveal" style={{ marginTop: '32px' }}>
+            <h3 style={{ marginBottom: '20px', textAlign: 'center' }}>Adoption Process <span className="text-gradient">FAQ</span></h3>
+            <div className="grid-2" style={{ gap: '16px' }}>
+              {[
+                { q: 'How long does review take?', a: 'Most applications are reviewed within 1-3 business days. Complex cases may take up to 5 days.', icon: 'clock', color: 'var(--blue-400)' },
+                { q: 'Will you check references?', a: 'Yes, we contact your veterinary and personal references. This helps us ensure a great match.', icon: 'phone', color: 'var(--green-500)' },
+                { q: 'What are the adoption fees?', a: 'Dogs: $250-350, Cats: $150-200, Kittens: $200. All include spay/neuter, vaccinations, and microchip.', icon: 'heart', color: 'var(--rose-400)' },
+                { q: 'Tips for a strong application?', a: 'Be detailed about your home, schedule, and pet experience. Mention fenced yards and vet history.', icon: 'star', color: '#F59E0B' },
+              ].map((item, i) => (
+                <div key={i} className="card" style={{ padding: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <IconCircle name={item.icon} size={36} color={item.color} bgOpacity={0.12} style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <h4 style={{ fontSize: '0.92rem', marginBottom: '6px' }}>{item.q}</h4>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>{item.a}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <Link href="/dashboard" className="btn btn-ghost btn-sm">← Back to Dashboard</Link>
+          </div>
         </div>
       </section>
     </>

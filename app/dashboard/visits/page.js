@@ -178,15 +178,83 @@ export default function VisitsPage() {
             </div>
           )}
 
+          {/* Preparation Checklist */}
+          <div className="card" style={{ padding: '32px', marginTop: '40px' }}>
+            <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <IconCircle name="check" size={32} color="var(--green-500)" bgOpacity={0.12} /> What to Bring
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+              {[
+                { text: 'Photo ID (driver\'s license)', icon: '🪪' },
+                { text: 'Proof of address', icon: '🏠' },
+                { text: 'Pet carrier (if adopting a cat)', icon: '🐈' },
+                { text: 'Leash (if adopting a dog)', icon: '🦮' },
+                { text: 'Questions for staff', icon: '❓' },
+                { text: 'All family members', icon: '👨‍👩‍👧‍👦' },
+              ].map((item, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
+                  background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-light)',
+                }}>
+                  <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                  <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* What to Expect */}
+          <div style={{ marginTop: '40px' }}>
+            <h3 style={{ marginBottom: '24px', textAlign: 'center' }}>What to <span className="text-gradient">Expect</span></h3>
+            <div className="grid-4" style={{ gap: '16px' }}>
+              {[
+                { step: '1', title: 'Check In', desc: 'Sign in at the front desk and meet a staff member.', icon: 'edit', color: 'var(--blue-400)' },
+                { step: '2', title: 'Tour', desc: 'Walk through the shelter and meet available animals.', icon: 'paw', color: 'var(--green-500)' },
+                { step: '3', title: 'Interaction', desc: 'Spend one-on-one time in a meet-and-greet room.', icon: 'heart', color: 'var(--rose-400)' },
+                { step: '4', title: 'Next Steps', desc: 'If you\'re ready, start the application on the spot!', icon: 'check', color: '#8B5CF6' },
+              ].map((item, i) => (
+                <div key={i} className="card" style={{ textAlign: 'center', padding: '24px 16px', position: 'relative' }}>
+                  <div style={{
+                    position: 'absolute', top: '8px', right: '12px',
+                    fontFamily: 'var(--font-display)', fontSize: '1.6rem', fontWeight: 800,
+                    color: 'var(--border-light)', opacity: 0.5,
+                  }}>{item.step}</div>
+                  <IconCircle name={item.icon} size={40} color={item.color} bgOpacity={0.12} style={{ margin: '0 auto 12px' }} />
+                  <h4 style={{ marginBottom: '6px', fontSize: '0.92rem' }}>{item.title}</h4>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: 1.5 }}>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div style={{
+            marginTop: '32px', padding: '24px 32px',
+            background: 'linear-gradient(135deg, rgba(59,130,246,0.06), rgba(16,185,129,0.06))',
+            borderRadius: 'var(--radius-lg)', border: '1px solid rgba(59,130,246,0.1)',
+            display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '20px',
+          }}>
+            {[
+              { value: '~15 min', label: 'Average Meet & Greet' },
+              { value: '89%', label: 'Same-Day Booking' },
+              { value: 'Free', label: 'Walk-Ins Welcome' },
+            ].map((stat, i) => (
+              <div key={i} style={{ textAlign: 'center', minWidth: '80px' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-accent)' }}>{stat.value}</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
           {/* Info Cards */}
-          <div className="grid-2" style={{ marginTop: '40px' }}>
+          <div className="grid-2" style={{ marginTop: '32px' }}>
             <div className="card" style={{ padding: '28px', textAlign: 'center' }}>
               <IconCircle name="clock" size={48} color="var(--blue-500)" bgOpacity={0.1} style={{ margin: '0 auto 12px' }} />
               <h3 style={{ fontSize: '1rem', marginBottom: '8px' }}>Shelter Hours</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Mon–Fri: 10am–5pm<br />
-                Sat: 10am–4pm<br />
-                Sun: 12pm–4pm
+                Mon–Sat: 12pm–5pm<br />
+                Sunday: Closed
               </p>
             </div>
             <div className="card" style={{ padding: '28px', textAlign: 'center' }}>
@@ -194,10 +262,14 @@ export default function VisitsPage() {
               <h3 style={{ fontSize: '1rem', marginBottom: '8px' }}>Location</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
                 SSM Humane Society<br />
-                175 Old Garden River Rd<br />
-                Sault Ste. Marie, ON
+                962 Second Line East<br />
+                Sault Ste. Marie, ON P6B 4K4
               </p>
             </div>
+          </div>
+
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <Link href="/dashboard" className="btn btn-ghost btn-sm">← Back to Dashboard</Link>
           </div>
         </div>
       </section>
