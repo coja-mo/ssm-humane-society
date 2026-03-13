@@ -309,6 +309,57 @@ export default function AdoptionInformationPage() {
         </div>
       </section>
 
+      {/* First Week Home */}
+      <section className="section">
+        <div className="container" style={{ maxWidth: '900px' }}>
+          <h2 className="text-center reveal" style={{ fontSize: '2rem', marginBottom: '12px' }}>
+            Your First <span className="text-gradient">Week Home</span>
+          </h2>
+          <p className="text-center reveal" style={{ color: 'var(--text-secondary)', marginBottom: '40px', maxWidth: '500px', margin: '0 auto 40px' }}>
+            Setting your new pet up for success from day one.
+          </p>
+          <div className="grid-2 stagger" style={{ gap: '20px' }}>
+            {[
+              { icon: '🏠', title: 'Create a Safe Space', tips: ['Set up a quiet room with bed, food, and water', 'Keep doors closed during initial adjustment', 'Gradually introduce them to other rooms'] },
+              { icon: '📋', title: 'Stick to a Routine', tips: ['Feed at the same time each day', 'Establish a potty schedule (dogs)', 'Maintain consistent sleep arrangements'] },
+              { icon: '🏥', title: 'First Vet Visit', tips: ['Schedule within the first week', 'Bring all adoption paperwork', 'Discuss diet, exercise, and medications'] },
+              { icon: '💛', title: 'Be Patient', tips: ['The "3-3-3 rule": 3 days to decompress, 3 weeks to learn routines, 3 months to feel at home', 'Avoid overwhelming them with visitors', 'Celebrate small wins and progress'] },
+            ].map((item, i) => (
+              <div key={i} className="card" style={{ padding: '28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '1.8rem' }}>{item.icon}</span>
+                  <h3 style={{ fontSize: '1.05rem' }}>{item.title}</h3>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: '8px' }}>
+                  {item.tips.map((tip, j) => (
+                    <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                      <Icon name="check" size={14} color="var(--green-500)" style={{ marginTop: '4px', flexShrink: 0 }} />
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Need Help? */}
+          <div className="card reveal" style={{ marginTop: '32px', padding: '24px', borderLeft: '4px solid var(--blue-500)', display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+            <IconCircle name="phone" size={40} color="var(--blue-500)" bgOpacity={0.12} style={{ flexShrink: 0 }} />
+            <div>
+              <h4 style={{ marginBottom: '4px', fontSize: '0.95rem' }}>Need Help After Adoption?</h4>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.6, marginBottom: '8px' }}>
+                Our team is here for you. Call us at <a href="tel:7059493573" style={{ color: 'var(--text-accent)', fontWeight: 600 }}>705-949-3573</a> (Mon–Sat, 12–5 PM)
+                or email <a href="mailto:info@ssmhumanesociety.ca" style={{ color: 'var(--text-accent)', fontWeight: 600 }}>info@ssmhumanesociety.ca</a> for post-adoption support.
+              </p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <Link href="/contact" className="btn btn-sm btn-primary" style={{ borderRadius: '100px' }}>Contact Us</Link>
+                <Link href="/faq" className="btn btn-sm btn-ghost">View FAQ</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Bottom CTA */}
       <section style={{
         padding: '64px 0',
