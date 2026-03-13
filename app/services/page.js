@@ -191,6 +191,75 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      {/* Adoption Fees */}
+      <section className="section">
+        <div className="container">
+          <div className="text-center reveal" style={{ marginBottom: '48px' }}>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', marginBottom: '12px' }}>
+              Adoption <span className="text-gradient">Fees</span>
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '0 auto' }}>
+              All fees include spay/neuter, vaccinations, microchip, and health check.
+            </p>
+          </div>
+          <div className="grid-4 stagger" style={{ maxWidth: '900px', margin: '0 auto' }}>
+            {[
+              { animal: 'Dog', price: '$300', includes: ['Spay/Neuter', 'Vaccinations', 'Microchip', 'Heartworm test', 'Flea treatment', 'Deworming'], icon: '🐕', popular: true },
+              { animal: 'Cat', price: '$175', includes: ['Spay/Neuter', 'Vaccinations', 'Microchip', 'FeLV/FIV test', 'Flea treatment', 'Deworming'], icon: '🐈', popular: false },
+              { animal: 'Kitten', price: '$200', includes: ['Spay/Neuter', 'Vaccinations', 'Microchip', 'FeLV test', 'Flea treatment', 'First vet visit'], icon: '🐱', popular: true },
+              { animal: 'Small Animal', price: '$50', includes: ['Health check', 'Parasite treatment', 'Care guide', 'Starter supplies', 'Diet info'], icon: '🐰', popular: false },
+            ].map((item, i) => (
+              <div key={i} className="card card-3d" style={{ padding: '28px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                {item.popular && (
+                  <div style={{ position: 'absolute', top: '12px', right: '-32px', transform: 'rotate(45deg)', background: 'var(--blue-500)', color: '#fff', padding: '4px 40px', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em' }}>POPULAR</div>
+                )}
+                <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>{item.icon}</div>
+                <h3 style={{ marginBottom: '4px', fontSize: '1.05rem' }}>{item.animal}</h3>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 800, color: 'var(--text-accent)', marginBottom: '16px' }}>{item.price}</div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, textAlign: 'left' }}>
+                  {item.includes.map((inc, j) => (
+                    <li key={j} style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', padding: '6px 0', borderBottom: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Icon name="check" size={12} color="var(--green-500)" /> {inc}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/adopt" className="btn btn-primary btn-sm" style={{ width: '100%', marginTop: '16px', borderRadius: 'var(--radius-lg)' }}>
+                  Browse {item.animal}s
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Service FAQ */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="container" style={{ maxWidth: '750px' }}>
+          <h2 className="text-center reveal" style={{ marginBottom: '32px' }}>
+            Frequently Asked <span className="text-gradient">Questions</span>
+          </h2>
+          <div className="stagger" style={{ display: 'grid', gap: '12px' }}>
+            {[
+              { q: 'What does the adoption fee include?', a: 'Every adoption includes spay/neuter surgery, age-appropriate vaccinations, microchip implantation and registration, a basic health exam, parasite treatment, and a take-home care package. Dogs also receive a heartworm test, and cats receive FeLV/FIV testing.' },
+              { q: 'Do you offer low-cost veterinary services to the public?', a: 'Our primary veterinary services are for shelter animals. However, we do run periodic low-cost spay/neuter clinics open to the public. Follow our events page or sign up for our newsletter to be notified of upcoming clinics.' },
+              { q: 'How does the foster program work?', a: 'We provide everything your foster pet needs: food, litter, crate, toys, and veterinary care. Foster periods typically range from 2-8 weeks. You\'ll receive training and have 24/7 support from our foster coordinator. Visit our foster page for the full details.' },
+              { q: 'Can I surrender my pet to the shelter?', a: 'Yes, though we encourage you to explore alternatives first. We offer behavioral support, temporary fostering, and rehoming assistance. If surrender is the best option, contact us to schedule an intake appointment. A surrender fee may apply.' },
+              { q: 'Do you operate a trap-neuter-return (TNR) program?', a: 'Yes! Our TNR program helps manage community cat colonies humanely. We provide traps, perform spay/neuter, and return cats to their colony. Contact us for assistance with feral cats in your neighbourhood.' },
+            ].map((item, i) => (
+              <details key={i} className="card" style={{ padding: 0, cursor: 'pointer' }}>
+                <summary style={{ padding: '18px 24px', fontWeight: 600, fontSize: '0.95rem', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                  {item.q}
+                  <Icon name="arrow" size={14} color="var(--text-muted)" style={{ transform: 'rotate(90deg)', flexShrink: 0, transition: 'transform 0.2s' }} />
+                </summary>
+                <div style={{ padding: '0 24px 18px', color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.7, borderTop: '1px solid var(--border-light)', paddingTop: '16px' }}>
+                  {item.a}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Dark CTA Section */}
       <section className="section section-dark" style={{ position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(41,171,226,0.08) 0%, transparent 60%)', borderRadius: '50%' }} />
