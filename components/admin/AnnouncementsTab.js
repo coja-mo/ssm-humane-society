@@ -119,6 +119,35 @@ export default function AnnouncementsTab({ announcements, onAdd, onUpdate, onDel
         })}
         {filtered.length === 0 && (<div className="admin-panel"><div className="admin-empty"><div className="admin-empty-icon">📢</div><div className="admin-empty-title">No announcements</div><div className="admin-empty-text">Create announcements to communicate with staff, volunteers, and the public.</div></div></div>)}
       </div>
+
+      {/* Quick Templates */}
+      <div className="admin-panel" style={{ marginTop: '20px' }}>
+        <div className="admin-panel-header">
+          <div className="admin-panel-title"><span style={{ fontSize: '1.1rem' }}>📋</span> Quick Templates</div>
+        </div>
+        <div className="admin-panel-body" style={{ padding: '16px 24px 20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+            {[
+              { icon: '🚪', title: 'Holiday Closure', tpl: { title: 'Holiday Closure Notice', content: 'The shelter will be closed on [DATE] for [HOLIDAY]. We will reopen on [DATE] at 12:00 PM. For emergencies, please call [PHONE].', category: 'closure', priority: 'high' } },
+              { icon: '🎉', title: 'Adoption Event', tpl: { title: 'Adoption Event: [EVENT NAME]', content: 'Join us on [DATE] for our [EVENT NAME]! Reduced adoption fees, meet adorable pets, and enjoy family-friendly activities.', category: 'event', priority: 'normal' } },
+              { icon: '🐾', title: 'New Pet Alert', tpl: { title: 'New Arrivals Available!', content: 'We have [NUMBER] new [TYPE] available for adoption! Visit our gallery to meet them or schedule a visit.', category: 'adoption', priority: 'normal' } },
+              { icon: '📋', title: 'Policy Update', tpl: { title: 'Updated Adoption Policy', content: 'Please note the following changes to our adoption policy effective [DATE]:\n\n1. [CHANGE 1]\n2. [CHANGE 2]\n\nContact us with any questions.', category: 'policy', priority: 'normal' } },
+            ].map((t, i) => (
+              <button key={i}
+                className="btn"
+                onClick={() => { setForm({ ...form, ...t.tpl, scheduledDate: '', expiresAt: '', targetAudience: 'all', showOnSite: false, pinned: false }); setShowAdd(true); }}
+                style={{
+                  background: 'var(--bg-secondary)', border: '1px solid var(--border-light)',
+                  padding: '14px', borderRadius: 'var(--radius-md)', textAlign: 'left',
+                  fontFamily: 'inherit', cursor: 'pointer', transition: 'all 0.2s',
+                }}>
+                <span style={{ fontSize: '1.3rem', display: 'block', marginBottom: '6px' }}>{t.icon}</span>
+                <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{t.title}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </>
   );
 }
