@@ -280,6 +280,90 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== GET INVOLVED ===== */}
+      <section className="section" style={{ padding:'80px 0' }}>
+        <div className="container">
+          <div className="text-center reveal" style={{ marginBottom:'48px' }}>
+            <h2 style={{ fontSize:'clamp(2rem, 4vw, 2.8rem)', marginBottom:'12px' }}>
+              Ways to <span className="text-gradient">Get Involved</span>
+            </h2>
+            <p style={{ color:'var(--text-secondary)', maxWidth:'460px', margin:'0 auto' }}>
+              There are many ways to make a difference in an animal&apos;s life.
+            </p>
+          </div>
+          <div className="grid-4 stagger">
+            {[
+              { icon:'paw', title:'Adopt', desc:'Give a shelter pet a loving forever home. Browse available animals today.', color:'var(--blue-400)', href:'/adopt' },
+              { icon:'home', title:'Foster', desc:'Open your home temporarily and help pets prepare for adoption.', color:'var(--green-500)', href:'/foster' },
+              { icon:'people', title:'Volunteer', desc:'Join 250+ volunteers helping with animal care, events, and outreach.', color:'#8B5CF6', href:'/volunteer' },
+              { icon:'heart', title:'Donate', desc:'Every dollar goes directly toward medical care, food, and shelter operations.', color:'var(--rose-400)', href:'/donate' },
+            ].map((item, i) => (
+              <Link key={i} href={item.href} className="card card-3d" style={{ padding:'32px 24px', textAlign:'center', textDecoration:'none', color:'inherit', display:'block' }}>
+                <IconCircle name={item.icon} size={48} color={item.color} bgOpacity={0.12} style={{ margin:'0 auto 16px' }} />
+                <h3 style={{ marginBottom:'8px', fontSize:'1.05rem' }}>{item.title}</h3>
+                <p style={{ color:'var(--text-muted)', fontSize:'0.85rem', lineHeight:'1.6', marginBottom:'12px' }}>{item.desc}</p>
+                <span style={{ color:item.color, fontWeight:600, fontSize:'0.82rem', display:'inline-flex', alignItems:'center', gap:'4px' }}>
+                  Learn More <Icon name="arrow" size={12} color={item.color} />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== COMMUNITY PARTNERS ===== */}
+      <section style={{ background:'var(--bg-secondary)', padding:'48px 0' }}>
+        <div className="container reveal">
+          <div className="text-center" style={{ marginBottom:'28px' }}>
+            <div style={{ fontSize:'0.72rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', color:'var(--text-muted)', marginBottom:'8px' }}>Supported By</div>
+            <h3 style={{ fontSize:'1.2rem' }}>Our Community <span className="text-gradient">Partners</span></h3>
+          </div>
+          <div style={{ display:'flex', justifyContent:'center', flexWrap:'wrap', gap:'32px', alignItems:'center' }}>
+            {[
+              { name:'City of Sault Ste. Marie', emoji:'🏛️' },
+              { name:'PetSmart Charities', emoji:'🐾' },
+              { name:'Algoma Veterinary Clinic', emoji:'🏥' },
+              { name:'Northern Credit Union', emoji:'🏦' },
+              { name:'Soo Today Media', emoji:'📰' },
+              { name:'Algoma University', emoji:'🎓' },
+            ].map((partner, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:'8px', padding:'12px 20px', background:'var(--bg-card)', borderRadius:'var(--radius-lg)', border:'1px solid var(--border-light)' }}>
+                <span style={{ fontSize:'1.2rem' }}>{partner.emoji}</span>
+                <span style={{ fontSize:'0.82rem', fontWeight:600, color:'var(--text-muted)' }}>{partner.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== SHELTER LIFE ===== */}
+      <section className="section" style={{ padding:'80px 0' }}>
+        <div className="container">
+          <div className="text-center reveal" style={{ marginBottom:'48px' }}>
+            <h2 style={{ fontSize:'clamp(2rem, 4vw, 2.8rem)', marginBottom:'12px' }}>
+              Inside the <span className="text-gradient-warm">Shelter</span>
+            </h2>
+            <p style={{ color:'var(--text-secondary)', maxWidth:'480px', margin:'0 auto' }}>
+              A glimpse into daily life and the work that goes into caring for every animal.
+            </p>
+          </div>
+          <div className="grid-3 stagger">
+            {[
+              { title:'Morning Rounds', desc:'Every day starts with health checks, feeding, and enrichment activities for all 100+ animals in our care.', icon:'clock', color:'var(--blue-400)', stat:'6:30 AM' },
+              { title:'Medical Care', desc:'Our veterinary team provides vaccinations, spay/neuter surgeries, dental care, and emergency treatments.', icon:'medical', color:'var(--green-500)', stat:'2,400+' },
+              { title:'Training & Socialization', desc:'Volunteers and staff work daily on behavior training to help animals become adoptable and confident.', icon:'star', color:'#F59E0B', stat: '8 hrs/day' },
+            ].map((item, i) => (
+              <div key={i} className="card card-3d" style={{ padding:'32px', position:'relative', overflow:'hidden' }}>
+                <div style={{ position:'absolute', top:'12px', right:'16px', fontFamily:'var(--font-display)', fontSize:'1.6rem', fontWeight:800, color:'var(--border-light)', opacity:0.5 }}>{item.stat}</div>
+                <IconCircle name={item.icon} size={44} color={item.color} bgOpacity={0.12} style={{ marginBottom:'16px' }} />
+                <h3 style={{ marginBottom:'10px', fontSize:'1.05rem' }}>{item.title}</h3>
+                <p style={{ color:'var(--text-muted)', fontSize:'0.88rem', lineHeight:'1.7' }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== CTA — bold gradient ===== */}
       <section style={{
         background:'linear-gradient(135deg, var(--blue-500), #0EA5E9, var(--blue-600))',
