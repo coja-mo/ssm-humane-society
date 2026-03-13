@@ -261,6 +261,51 @@ function DashboardContent() {
                 </Link>
               ))}
             </div>
+
+            {/* Upcoming Events Preview */}
+            <div className="card" style={{ padding: '28px', marginTop: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>📅 Upcoming Events</h3>
+                <Link href="/events" style={{ fontSize: '0.82rem', color: 'var(--text-accent)', fontWeight: 600, textDecoration: 'none' }}>View All →</Link>
+              </div>
+              <div style={{ display: 'grid', gap: '12px' }}>
+                {[
+                  { title: 'Spring Adoption Event', date: 'Apr 12', desc: 'Reduced adoption fees, food trucks, and a pet photo booth!', color: 'var(--green-500)', icon: '🌸' },
+                  { title: 'Kitten Shower', date: 'May 10', desc: 'Bring supplies from our wishlist and cuddle some kittens!', color: 'var(--rose-400)', icon: '🐱' },
+                ].map((event, i) => (
+                  <Link key={i} href="/events" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', textDecoration: 'none', color: 'inherit', transition: 'all 0.2s' }}>
+                    <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: `${event.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>{event.icon}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, marginBottom: '2px', fontSize: '0.95rem' }}>{event.title}</div>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{event.desc}</div>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontWeight: 700, color: event.color, fontSize: '0.9rem' }}>{event.date}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>RSVP Open</div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Adoption Resources */}
+            <div style={{ marginTop: '24px' }}>
+              <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem' }}>📚 Helpful Resources</h3>
+              <div className="grid-4" style={{ gap: '12px' }}>
+                {[
+                  { icon: '📖', title: 'Adoption Guide', desc: 'Everything you need to know', href: '/adopt/adoption-information', color: 'var(--blue-400)' },
+                  { icon: '🏠', title: 'Foster Info', desc: 'Open your home, save a life', href: '/foster', color: 'var(--green-500)' },
+                  { icon: '❓', title: 'FAQ', desc: 'Common questions answered', href: '/faq', color: '#F59E0B' },
+                  { icon: '💕', title: 'Success Stories', desc: 'Happy tails from adopters', href: '/stories', color: 'var(--rose-400)' },
+                ].map((res, i) => (
+                  <Link key={i} href={res.href} className="card" style={{ padding: '20px', textDecoration: 'none', color: 'inherit', display: 'block', borderLeft: `3px solid ${res.color}` }}>
+                    <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{res.icon}</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '2px' }}>{res.title}</div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{res.desc}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </>
         )}
 
