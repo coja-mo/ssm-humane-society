@@ -1,0 +1,47 @@
+{
+  "name": "Sault Ste. Marie Humane Society",
+  "short_name": "SSM Humane",
+  "description": "Find your furever friend. Browse adoptable pets, apply to adopt, volunteer, foster, or donate.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFCFF",
+  "theme_color": "#29ABE2",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-CA",
+  "categories": ["lifestyle", "nonprofit"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Adopt a Pet",
+      "short_name": "Adopt",
+      "url": "/adopt",
+      "description": "Browse adoptable pets"
+    },
+    {
+      "name": "Donate",
+      "short_name": "Donate",
+      "url": "/donate",
+      "description": "Support our mission"
+    },
+    {
+      "name": "Events",
+      "short_name": "Events",
+      "url": "/events",
+      "description": "Upcoming events"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import PawBackground from '@/components/effects/PawBackground';
 import CursorGlow from '@/components/effects/CursorGlow';
 import ScrollProgress from '@/components/effects/ScrollProgress';
 import BackToTop from '@/components/effects/BackToTop';
+import SkipToContent from '@/components/ui/SkipToContent';
 
 export const metadata = {
   metadataBase: new URL('https://ssmhumanesociety.ca'),
@@ -46,7 +47,49 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'AnimalShelter',
+              name: 'Sault Ste. Marie Humane Society',
+              url: 'https://ssmhumanesociety.ca',
+              telephone: '+1-705-949-3573',
+              email: 'info@ssmhumanesociety.ca',
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: '962 Second Line East',
+                addressLocality: 'Sault Ste. Marie',
+                addressRegion: 'ON',
+                postalCode: 'P6A 0B3',
+                addressCountry: 'CA',
+              },
+              openingHoursSpecification: [
+                { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], opens: '12:00', closes: '17:00' },
+              ],
+              description: 'The Sault Ste. Marie Humane Society is committed to improving the lives of animals through rescue, adoption, and education.',
+              sameAs: [],
+              hasOfferCatalog: {
+                '@type': 'OfferCatalog',
+                name: 'Services',
+                itemListElement: [
+                  { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Pet Adoption' } },
+                  { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Foster Program' } },
+                  { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Veterinary Services' } },
+                  { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Trap-Neuter-Return (TNR)' } },
+                ],
+              },
+            }),
+          }}
+        />
+      </head>
       <body>
+        <SkipToContent />
         <ScrollProgress />
         <CursorGlow />
         <PawBackground />
