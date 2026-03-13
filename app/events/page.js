@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState, useEffect } from 'react';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
@@ -50,6 +51,7 @@ function Countdown({ targetDate }) {
 
 export default function EventsPage() {
   useScrollReveal();
+  usePageTitle('Events');
   const [notifyEmail, setNotifyEmail] = useState('');
   const [notified, setNotified] = useState(false);
   const [rsvps, setRsvps] = useState({});

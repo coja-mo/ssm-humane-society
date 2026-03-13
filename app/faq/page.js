@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
@@ -39,6 +40,7 @@ const FAQS = [
 
 export default function FAQPage() {
   useScrollReveal();
+  usePageTitle('FAQ');
   const [open, setOpen] = useState(null);
   const [searchQ, setSearchQ] = useState('');
   const [activeCat, setActiveCat] = useState('all');

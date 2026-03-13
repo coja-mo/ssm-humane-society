@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
@@ -16,6 +17,7 @@ const IMPACTS = [
 
 export default function DonatePage() {
   useScrollReveal();
+  usePageTitle('Donate');
   const [amount, setAmount] = useState(50);
   const [isMonthly, setIsMonthly] = useState(false);
   const [thermometerWidth, setThermometerWidth] = useState(0);

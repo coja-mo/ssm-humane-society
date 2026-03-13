@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState, useEffect } from 'react';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
@@ -8,6 +9,7 @@ const PET_TYPES = ['dog', 'cat', 'bird', 'rabbit', 'other'];
 
 export default function LostFoundPage() {
   useScrollReveal();
+  usePageTitle('Lost & Found');
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);

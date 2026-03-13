@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
@@ -66,6 +67,7 @@ function CheckboxGroup({ options, selected, onChange }) {
 
 export default function FosterPage() {
   useScrollReveal();
+  usePageTitle('Foster Program');
   const [step, setStep] = useState(-1); // -1 = info page, 0+ = form steps
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);

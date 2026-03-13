@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState } from 'react';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
@@ -30,6 +31,7 @@ const TESTIMONIALS = [
 
 export default function VolunteerPage() {
   useScrollReveal();
+  usePageTitle('Volunteer');
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

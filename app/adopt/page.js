@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
@@ -85,6 +86,7 @@ function AnimatedNumber({ value }) {
 
 export default function AdoptPage() {
   useScrollReveal();
+  usePageTitle('Adopt a Pet');
   const [typeFilter, setTypeFilter] = useState('all');
   const [ageFilter, setAgeFilter] = useState('all');
   const [traitFilter, setTraitFilter] = useState(null);

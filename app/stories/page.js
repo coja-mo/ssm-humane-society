@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
@@ -52,6 +53,7 @@ const TAGS = ['All', 'Adoption', 'Senior Adoption', 'Foster-to-Adopt', 'Bonded P
 
 export default function StoriesPage() {
   useScrollReveal();
+  usePageTitle('Success Stories');
   const [filterTag, setFilterTag] = useState('All');
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);

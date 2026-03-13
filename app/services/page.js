@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
@@ -30,6 +31,7 @@ const PARTNERS = [
 
 export default function ServicesPage() {
   useScrollReveal();
+  usePageTitle('Our Services');
   const [expandedService, setExpandedService] = useState(null);
 
   return (

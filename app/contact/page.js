@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import { useState } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
@@ -23,6 +24,7 @@ const DEPARTMENTS = [
 
 export default function ContactPage() {
   useScrollReveal();
+  usePageTitle('Contact Us');
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', department: 'general', message: '' });

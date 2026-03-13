@@ -1,4 +1,5 @@
 'use client';
+import usePageTitle from '@/hooks/usePageTitle';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
@@ -30,6 +31,7 @@ const HAPPY_TAILS = [
 
 export default function AboutPage() {
   useScrollReveal();
+  usePageTitle('About Us');
   return (
     <>
       <section style={{ paddingTop: '120px', paddingBottom: '60px', background: 'linear-gradient(180deg, var(--blue-50) 0%, var(--bg-primary) 100%)', position: 'relative', overflow: 'hidden' }}>
