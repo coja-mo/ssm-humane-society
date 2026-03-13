@@ -10,15 +10,50 @@ async function getApps() {
 }
 async function saveApps(apps) { await fs.writeFile(APPS_PATH, JSON.stringify(apps, null, 2)); }
 
-export async function GET() {
+export async function GET(request) {
   const apps = await getApps();
-  return NextResponse.json(apps);
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get('userId');
+  const status = searchParams.get('status');
+  const excludeDrafts = searchParams.get('excludeDrafts');
+
+  let filtered = apps;
+  if (userId) filtered = filtered.filter(a => a.userId === userId);
+  if (status) filtered = filtered.filter(a => a.status === status);
+  if (excludeDrafts === 'true') filtered = filtered.filter(a => a.status !== 'draft');
+
+  return NextResponse.json(filtered);
 }
 
 export async function POST(request) {
   const body = await request.json();
   const apps = await getApps();
-  const app = { id: Date.now().toString(), ...body, status: 'submitted', createdAt: new Date().toISOString(), notes: [] };
+  const app = {
+    id: Date.now().toString(),
+    ...body,
+    status: body.status || 'submitted',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    notes: [],
+    reviewChecklist: {
+      vetReferenceContacted: false,
+      vetReferenceVerified: false,
+      landlordContacted: false,
+      homeCheckScheduled: false,
+      homeCheckPassed: null,
+      allMembersMet: false,
+    },
+    scoring: {
+      housingSuitability: null,
+      petExperience: null,
+      careCommitment: null,
+      overallMatch: null,
+    },
+    assignedTo: null,
+    reviewDate: null,
+    homeCheckDate: null,
+    homeCheckNotes: '',
+  };
   apps.push(app);
   await saveApps(apps);
   return NextResponse.json(app, { status: 201 });

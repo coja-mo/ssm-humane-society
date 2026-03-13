@@ -24,6 +24,8 @@ const MOBILE_ICONS = {
   '/events': 'calendar',
   '/lost-found': 'search',
   '/contact': 'mail',
+  '/faq': 'book',
+  '/surrender': 'home',
 };
 
 export default function Navbar() {
@@ -135,6 +137,17 @@ export default function Navbar() {
             {l.label}
           </Link>
         ))}
+        <div style={{ height: '1px', background: 'var(--border-light)', margin: '4px 0' }} />
+        <Link href="/faq" onClick={() => setDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Icon name="book" size={18} color="var(--text-muted)" /> FAQ
+        </Link>
+        <Link href="/stories" onClick={() => setDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Icon name="heart" size={18} color="var(--text-muted)" /> Success Stories
+        </Link>
+        <Link href="/surrender" onClick={() => setDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Icon name="home" size={18} color="var(--text-muted)" /> Surrender a Pet
+        </Link>
+        <div style={{ height: '1px', background: 'var(--border-light)', margin: '4px 0' }} />
         <Link href="/donate" onClick={() => setDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Icon name="heart" size={18} color="var(--rose-500)" /> Donate
         </Link>

@@ -14,6 +14,7 @@ import LostFoundTab from '@/components/admin/LostFoundTab';
 import IntakeTab from '@/components/admin/IntakeTab';
 import SuppliesTab from '@/components/admin/SuppliesTab';
 import KennelsTab from '@/components/admin/KennelsTab';
+import MessagesTab from '@/components/admin/MessagesTab';
 
 /* ─── SVG ICONS ─── */
 const Icons = {
@@ -153,6 +154,7 @@ export default function AdminDashboard() {
   const updateAppStatus = async (id, status) => { await fetch(`/api/applications/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) }); setApps(prev => prev.map(a => a.id === id ? { ...a, status } : a)); };
   const addAppNote = async (id, note) => { const res = await fetch(`/api/applications/${id}/notes`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(note) }); if (res.ok) { const app = await res.json(); setApps(prev => prev.map(a => a.id === id ? app : a)); } };
   const deleteApp = async (id) => { await fetch(`/api/applications/${id}`, { method: 'DELETE' }); setApps(prev => prev.filter(a => a.id !== id)); };
+  const updateApp = async (id, data) => { const res = await fetch(`/api/applications/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const app = await res.json(); setApps(prev => prev.map(a => a.id === id ? app : a)); } };
 
   const addDonation = async (data) => { const res = await fetch('/api/donations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const d = await res.json(); setDonations(prev => [d, ...prev]); } };
   const updateDonation = async (id, data) => { const res = await fetch(`/api/donations/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (res.ok) { const d = await res.json(); setDonations(prev => prev.map(x => x.id === id ? d : x)); } };
@@ -335,7 +337,7 @@ export default function AdminDashboard() {
             <PetsTab pets={pets} loading={loading} onAddPet={addPet} onDeletePet={deletePet} onUpdatePet={updatePet} />
           )}
           {activeTab === 'applications' && (
-            <ApplicationsTab apps={apps} onUpdateStatus={updateAppStatus} onAddNote={addAppNote} onDeleteApp={deleteApp} />
+            <ApplicationsTab apps={apps} onUpdateStatus={updateAppStatus} onAddNote={addAppNote} onDeleteApp={deleteApp} onUpdateApp={updateApp} />
           )}
           {activeTab === 'donations' && (
             <DonationsTab donations={donations} loading={loading} onAdd={addDonation} onUpdate={updateDonation} onDelete={deleteDonation} />
@@ -436,53 +438,7 @@ export default function AdminDashboard() {
 
           {/* ═══ MESSAGES TAB ═══ */}
           {activeTab === 'messages' && (
-            <>
-              <div className="admin-page-header">
-                <div>
-                  <h1 className="admin-page-title">Messages</h1>
-                  <p className="admin-page-subtitle">{messages.length} total — {unreadMessages} unread</p>
-                </div>
-              </div>
-              <div className="admin-stats" style={{ marginBottom: '24px' }}>
-                {[{ label: 'Total', val: messages.length, color: 'var(--blue-500)' }, { label: 'Unread', val: unreadMessages, color: 'var(--rose-500)' }, { label: 'Read', val: messages.filter(m => m.status === 'read').length, color: 'var(--green-500)' }].map(s => (
-                  <div key={s.label} className="admin-stat-card" style={{ '--stat-accent': s.color }}>
-                    <div className="admin-stat-icon" style={{ background: `${s.color}15`, color: s.color }}>{Icons.messages}</div>
-                    <div className="admin-stat-value" style={{ marginTop: '12px' }}>{s.val}</div>
-                    <div className="admin-stat-label">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="admin-list">
-                {messages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(msg => (
-                  <div key={msg.id} className="admin-list-item" style={{ borderLeft: msg.status === 'unread' ? '3px solid var(--blue-500)' : '3px solid transparent' }}>
-                    <div className="admin-list-avatar" style={{ background: msg.status === 'unread' ? 'linear-gradient(135deg, var(--blue-500), var(--blue-600))' : 'var(--bg-secondary)', color: msg.status === 'unread' ? '#fff' : 'var(--text-muted)' }}>
-                      {Icons.mail}
-                    </div>
-                    <div className="admin-list-info">
-                      <div className="admin-list-name">{msg.name || 'Anonymous'} — <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>{msg.subject || 'No subject'}</span></div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.5 }}>{(msg.message || '').slice(0, 120)}{(msg.message || '').length > 120 ? '...' : ''}</div>
-                      <div className="admin-list-meta">
-                        <span>{msg.email}</span>
-                        <span>{new Date(msg.createdAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    <div className="admin-list-actions">
-                      {msg.status === 'unread' && (
-                        <button className="btn btn-sm" onClick={() => markMessageRead(msg.id)} title="Mark as read" style={{ background: 'var(--green-50)', color: 'var(--green-700)', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
-                          {Icons.check} Read
-                        </button>
-                      )}
-                      <button className="btn btn-sm" onClick={() => deleteMessage(msg.id)} title="Delete" style={{ background: '#FFE4E6', color: 'var(--rose-600)', border: 'none', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
-                        {Icons.trash}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {messages.length === 0 && (
-                  <div className="admin-panel"><div className="admin-empty"><div className="admin-empty-icon">💬</div><div className="admin-empty-title">No messages yet</div><div className="admin-empty-text">Messages from the contact form will appear here.</div></div></div>
-                )}
-              </div>
-            </>
+            <MessagesTab />
           )}
 
           {/* ═══ ACTIVITY TAB ═══ */}

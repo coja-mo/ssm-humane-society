@@ -18,11 +18,71 @@ export default function DonatePage() {
   const [amount, setAmount] = useState(50);
   const [isMonthly, setIsMonthly] = useState(false);
   const [thermometerWidth, setThermometerWidth] = useState(0);
+  const [donorName, setDonorName] = useState('');
+  const [donorEmail, setDonorEmail] = useState('');
+  const [donating, setDonating] = useState(false);
+  const [donated, setDonated] = useState(false);
+  const [receiptId, setReceiptId] = useState('');
   const presets = [10, 25, 50, 100, 250, 500];
 
   useEffect(() => { setTimeout(() => setThermometerWidth(73), 500); }, []);
 
   const activeImpacts = IMPACTS.filter(i => amount >= i.amount);
+
+  async function handleDonate() {
+    if (!donorName.trim() || !donorEmail.trim()) return;
+    setDonating(true);
+    try {
+      const res = await fetch('/api/donations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          donorName: donorName.trim(),
+          donorEmail: donorEmail.trim(),
+          amount,
+          type: isMonthly ? 'monthly' : 'one-time',
+          method: 'online',
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setReceiptId(data.id || `SSM-${Date.now()}`);
+        setDonated(true);
+      }
+    } catch (err) { console.error(err); }
+    setDonating(false);
+  }
+
+  if (donated) {
+    return (
+      <section style={{ paddingTop: '160px', paddingBottom: '100px', minHeight: '80vh' }}>
+        <div className="container text-center" style={{ maxWidth: '600px' }}>
+          <div style={{ fontSize: '5rem', marginBottom: '16px', animation: 'float 3s ease-in-out infinite' }}>💝</div>
+          <h1 style={{ marginBottom: '12px' }}>Thank You, <span className="text-gradient">{donorName.split(' ')[0]}!</span></h1>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '24px', fontSize: '1.05rem' }}>
+            Your {isMonthly ? 'monthly ' : ''}donation of <strong>${amount}</strong> will make a real difference in the lives of shelter animals.
+          </p>
+          <div className="card" style={{ padding: '24px', maxWidth: '400px', margin: '0 auto 32px', textAlign: 'left' }}>
+            <h3 style={{ fontSize: '0.9rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Icon name="check" size={16} color="var(--green-500)" /> Donation Receipt
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.88rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text-muted)' }}>Amount:</span><strong>${amount}{isMonthly ? '/month' : ''}</strong></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text-muted)' }}>Donor:</span><span>{donorName}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text-muted)' }}>Receipt #:</span><span style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}>{receiptId}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: 'var(--text-muted)' }}>Date:</span><span>{new Date().toLocaleDateString()}</span></div>
+            </div>
+            {amount >= 20 && (
+              <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-light)', fontSize: '0.82rem', color: 'var(--green-700)', background: 'rgba(16,185,129,0.05)', padding: '10px 12px', borderRadius: '8px' }}>
+                ✅ A tax receipt will be emailed to {donorEmail}
+              </div>
+            )}
+          </div>
+          <a href="/" className="btn btn-primary" style={{ borderRadius: '100px' }}>Return Home</a>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -89,13 +149,20 @@ export default function DonatePage() {
                   <span>Monthly donors save <strong>${(amount * 12).toLocaleString()}/year</strong> worth of animal lives!</span>
                 </div>
               )}
-              <button className="btn btn-lg" style={{ 
+              <div className="form-group" style={{ marginBottom: '12px' }}>
+                <input className="form-input" placeholder="Your Name *" value={donorName} onChange={e => setDonorName(e.target.value)} style={{ borderRadius: 'var(--radius-md)' }} />
+              </div>
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <input className="form-input" type="email" placeholder="Email (for receipt) *" value={donorEmail} onChange={e => setDonorEmail(e.target.value)} style={{ borderRadius: 'var(--radius-md)' }} />
+              </div>
+              <button className="btn btn-lg" onClick={handleDonate} disabled={donating || !donorName.trim() || !donorEmail.trim()} style={{ 
                 width: '100%', borderRadius: 'var(--radius-lg)',
                 background: 'linear-gradient(135deg, #F43F5E, #E11D48)', color: '#fff',
                 boxShadow: '0 4px 20px rgba(244,63,94,0.3)', fontSize: '1.05rem',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                opacity: (!donorName.trim() || !donorEmail.trim()) ? 0.6 : 1,
               }}>
-                <Icon name="heart" size={18} color="#fff" /> Donate ${amount}{isMonthly ? '/month' : ''} Now
+                <Icon name="heart" size={18} color="#fff" /> {donating ? 'Processing...' : `Donate $${amount}${isMonthly ? '/month' : ''} Now`}
               </button>
               <p style={{ textAlign: 'center', marginTop: '16px', color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Icon name="lock" size={12} color="var(--text-muted)" /> Secure payment · Tax receipt for donations of $20+</span>

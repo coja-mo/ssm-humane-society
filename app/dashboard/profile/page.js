@@ -7,6 +7,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [activeSection, setActiveSection] = useState('personal');
+  const [stats, setStats] = useState({ applications: 0, favorites: 0, adoptions: 0 });
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', address: '', city: '', bio: '',
   });
@@ -35,6 +36,24 @@ export default function ProfilePage() {
       email: parsed.email || '',
       phone: parsed.phone || '',
     }));
+
+    // Fetch live stats
+    fetch('/api/applications').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) {
+        const userApps = data.filter(a => !a.isDraft);
+        setStats(prev => ({
+          ...prev,
+          applications: userApps.length,
+          adoptions: userApps.filter(a => a.status === 'completed' || a.status === 'approved').length,
+        }));
+      }
+    }).catch(() => {});
+
+    const favs = localStorage.getItem('favorites');
+    if (favs) {
+      try { setStats(prev => ({ ...prev, favorites: JSON.parse(favs).length })); }
+      catch {}
+    }
   }, [router]);
 
   async function handleSaveProfile(e) {
@@ -121,15 +140,15 @@ export default function ProfilePage() {
             </div>
             <div className="profile-stats-row">
               <div className="profile-stat">
-                <div className="profile-stat-num">0</div>
+                <div className="profile-stat-num">{stats.applications}</div>
                 <div className="profile-stat-label">Applications</div>
               </div>
               <div className="profile-stat">
-                <div className="profile-stat-num">0</div>
+                <div className="profile-stat-num">{stats.favorites}</div>
                 <div className="profile-stat-label">Favorites</div>
               </div>
               <div className="profile-stat">
-                <div className="profile-stat-num">0</div>
+                <div className="profile-stat-num">{stats.adoptions}</div>
                 <div className="profile-stat-label">Adoptions</div>
               </div>
             </div>

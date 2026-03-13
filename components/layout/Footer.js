@@ -10,6 +10,11 @@ export default function Footer() {
   function handleSubscribe(e) {
     e.preventDefault();
     if (email) {
+      fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }).catch(() => {});
       setSubscribed(true);
       setEmail('');
       setTimeout(() => setSubscribed(false), 4000);
@@ -54,6 +59,21 @@ export default function Footer() {
               Thanks for subscribing! You&apos;ll hear from us soon.
             </p>
           )}
+        </div>
+
+        {/* Quick Stats */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', marginBottom: '40px', paddingBottom: '40px', borderBottom: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap' }}>
+          {[
+            { value: '1,847', label: 'Adoptions' },
+            { value: '250+', label: 'Volunteers' },
+            { value: '45+', label: 'Years of Service' },
+            { value: '100+', label: 'Animals in Care' },
+          ].map((stat, i) => (
+            <div key={i} style={{ textAlign: 'center', minWidth: '80px' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>{stat.value}</div>
+              <div style={{ fontSize: '0.68rem', color: '#6B7280', marginTop: '2px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{stat.label}</div>
+            </div>
+          ))}
         </div>
 
         <div className="footer-grid">
@@ -102,6 +122,9 @@ export default function Footer() {
               <li><Link href="/foster">Foster</Link></li>
               <li><Link href="/volunteer">Volunteer</Link></li>
               <li><Link href="/events">Events</Link></li>
+              <li><Link href="/stories">Success Stories</Link></li>
+              <li><Link href="/lost-found">Lost & Found</Link></li>
+              <li><Link href="/surrender">Surrender a Pet</Link></li>
               <li><Link href="/faq">FAQ</Link></li>
             </ul>
           </div>

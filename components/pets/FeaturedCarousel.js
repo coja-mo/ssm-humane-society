@@ -60,20 +60,21 @@ export default function FeaturedCarousel() {
     resumeTimer.current = setTimeout(() => { autoScrollRef.current = true; }, 3000);
   }, []);
 
-  // Handle manual wheel scroll
+  // Handle manual wheel scroll — only capture horizontal swipes, let vertical pass through to page
   const handleWheel = useCallback((e) => {
     const el = scrollRef.current;
     if (!el) return;
-    // Convert vertical scroll to horizontal
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+    // Only handle horizontal scroll (trackpad side-swipe)
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 2) {
       e.preventDefault();
-      el.scrollLeft += e.deltaY;
+      el.scrollLeft += e.deltaX;
+      pause();
+      scheduleResume();
     }
-    pause();
-    scheduleResume();
+    // Vertical scroll (deltaY) is NOT intercepted — it scrolls the page naturally
   }, [pause, scheduleResume]);
 
-  // Attach wheel listener with { passive: false } so we can preventDefault
+  // Attach wheel listener with { passive: false } so we can preventDefault on horizontal swipes
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;

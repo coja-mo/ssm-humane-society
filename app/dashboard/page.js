@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import OnboardingModal from '@/components/ui/OnboardingModal';
 
 const STATUS_LABELS = {
+  draft: { label: 'Draft', color: '#9CA3AF', icon: '📋' },
   submitted: { label: 'Submitted', color: 'var(--blue-500)', icon: '📝' },
   reviewing: { label: 'Under Review', color: '#F59E0B', icon: '🔍' },
   approved: { label: 'Approved', color: 'var(--green-500)', icon: '✅' },
@@ -160,9 +161,9 @@ function DashboardContent() {
             {/* Quick Stats */}
             <div className="stats-grid" style={{ marginBottom: '32px' }}>
               {[
-                { icon: '📝', label: 'Applications', count: apps.length, color: 'var(--blue-500)', href: '#' },
+                { icon: '📝', label: 'Applications', count: apps.filter(a => a.status !== 'draft').length, color: 'var(--blue-500)', href: '#' },
+                { icon: '📋', label: 'Drafts', count: apps.filter(a => a.status === 'draft').length, color: '#9CA3AF', href: '#' },
                 { icon: '❤️', label: 'Saved Pets', count: favorites.length, color: 'var(--rose-500)', href: '#' },
-                { icon: '📅', label: 'Upcoming Visits', count: apps.filter(a => a.status === 'visit-scheduled').length, color: '#8B5CF6', href: '#' },
                 { icon: '✅', label: 'Adoptions', count: apps.filter(a => a.status === 'adopted').length, color: 'var(--green-500)', href: '#' },
               ].map(item => (
                 <button key={item.label} onClick={() => setActiveTab(item.label === 'Saved Pets' ? 'favorites' : item.label === 'Upcoming Visits' ? 'visits' : 'applications')} className="stat-card" style={{ textDecoration: 'none', transition: 'all 0.3s', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
@@ -207,25 +208,32 @@ function DashboardContent() {
                 <div style={{ display: 'grid', gap: '12px' }}>
                   {apps.slice(0, 5).map(app => {
                     const status = STATUS_LABELS[app.status] || STATUS_LABELS.submitted;
+                    const isDraft = app.status === 'draft';
                     return (
-                      <div key={app.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', gap: '16px', flexWrap: 'wrap', transition: 'all 0.2s' }}>
+                      <div key={app.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', background: isDraft ? 'var(--blue-50)' : 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', gap: '16px', flexWrap: 'wrap', transition: 'all 0.2s', border: isDraft ? '1.5px dashed var(--blue-300)' : 'none' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                           <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: `${status.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>
                             {status.icon}
                           </div>
                           <div>
                             <div style={{ fontWeight: '600', marginBottom: '2px' }}>
-                              {app.petInterest || app.type} Adoption
+                              {app.petInterest || app.type} {isDraft ? 'Application' : 'Adoption'}
                             </div>
                             <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                              {new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              {isDraft ? `Last saved ${new Date(app.lastSavedAt || app.updatedAt || app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </div>
                           </div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="badge" style={{ background: `${status.color}15`, color: status.color }}>
-                            {status.label}
-                          </span>
+                          {isDraft ? (
+                            <Link href={`/apply/${app.type || 'dog'}?draft=${app.id}`} className="btn btn-sm btn-primary" style={{ borderRadius: '100px', fontSize: '0.82rem' }}>
+                              ✏️ Continue
+                            </Link>
+                          ) : (
+                            <span className="badge" style={{ background: `${status.color}15`, color: status.color }}>
+                              {status.label}
+                            </span>
+                          )}
                         </div>
                       </div>
                     );

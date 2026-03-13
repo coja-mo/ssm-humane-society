@@ -1,7 +1,32 @@
 'use client';
+import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
 import Icon, { IconCircle } from '@/components/ui/Icon';
+
+const HAPPY_TAILS = [
+  {
+    name: 'Tucker & The Mitchell Family',
+    pet: 'Tucker', petType: 'dog',
+    quote: 'Tucker was at the shelter for 3 months before we found him. Now he\'s the center of our family — hiking buddy, couch companion, and best friend to our kids.',
+    timeframe: 'Adopted 2025',
+    color: 'var(--blue-400)',
+  },
+  {
+    name: 'Luna & Sarah',
+    pet: 'Luna', petType: 'cat',
+    quote: 'I wasn\'t sure about adopting a senior cat, but Luna changed everything. She\'s the calmest, most affectionate soul. Seniors have so much love to give.',
+    timeframe: 'Adopted 2024',
+    color: 'var(--rose-400)',
+  },
+  {
+    name: 'Biscuit & The Patels',
+    pet: 'Biscuit', petType: 'dog',
+    quote: 'We fostered Biscuit and fell in love within a week. The shelter team made the foster-to-adopt transition seamless. He\'s home forever now.',
+    timeframe: 'Foster-to-Adopt 2025',
+    color: 'var(--green-500)',
+  },
+];
 
 export default function AboutPage() {
   useScrollReveal();
@@ -98,6 +123,59 @@ export default function AboutPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Happy Tails - Success Stories */}
+      <section className="section">
+        <div className="container">
+          <div className="text-center reveal" style={{ marginBottom: '48px' }}>
+            <span className="badge badge-rose" style={{ marginBottom: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Icon name="heart" size={14} color="var(--rose-600)" /> Success Stories
+            </span>
+            <h2 style={{ fontSize: '2rem', marginBottom: '12px' }}>Happy <span className="text-gradient-warm">Tails</span></h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '0 auto' }}>
+              Real stories from families whose lives were changed by adoption.
+            </p>
+          </div>
+          <div className="grid-3 stagger">
+            {HAPPY_TAILS.map((story, i) => (
+              <div key={i} className="card card-3d" style={{ overflow: 'hidden' }}>
+                <div style={{ height: '4px', background: story.color }} />
+                <div style={{ padding: '32px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{
+                      width: '48px', height: '48px', borderRadius: '50%',
+                      background: `linear-gradient(135deg, ${story.color}22, ${story.color}11)`,
+                      border: `2px solid ${story.color}33`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '1.2rem',
+                    }}>
+                      {story.petType === 'dog' ? '🐕' : story.petType === 'cat' ? '🐈' : '🐾'}
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '0.95rem', marginBottom: '2px' }}>{story.name}</h4>
+                      <span style={{ fontSize: '0.75rem', color: story.color, fontWeight: 600 }}>{story.timeframe}</span>
+                    </div>
+                  </div>
+                  <p style={{
+                    fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: '1.8',
+                    fontSize: '0.9rem', position: 'relative', paddingLeft: '16px',
+                    borderLeft: `3px solid ${story.color}33`,
+                  }}>
+                    &ldquo;{story.quote}&rdquo;
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center reveal" style={{ marginTop: '36px' }}>
+            <Link href="/stories" className="btn btn-primary" style={{
+              borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px',
+            }}>
+              <Icon name="heart" size={16} color="#fff" /> Read More Stories
+            </Link>
           </div>
         </div>
       </section>

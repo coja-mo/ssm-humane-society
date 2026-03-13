@@ -3,8 +3,11 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import PetImage from '@/components/pets/PetImage';
+import PetMatchQuiz from '@/components/pets/PetMatchQuiz';
+import FeaturedCarousel from '@/components/pets/FeaturedCarousel';
 import Icon, { IconCircle } from '@/components/ui/Icon';
 import pets from '@/lib/data/pets.json';
+import successStories from '@/lib/data/successStories';
 
 const TYPES = ['all', 'dog', 'cat', 'critter'];
 const AGES = ['all', 'Puppy', 'Young', 'Adult', 'Senior'];
@@ -18,12 +21,49 @@ const TYPE_ICONS = { all: 'paw', dog: 'dog', cat: 'cat', critter: 'bird' };
 const TYPE_LABELS = { all: 'All Pets', dog: 'Dogs', cat: 'Cats', critter: 'Critters' };
 const TYPE_EMOJI = { dog: '🐕', cat: '🐈', critter: '🐦' };
 
+const TRAIT_CHIPS = [
+  { value: 'sweet', label: 'Sweet', icon: '💛' },
+  { value: 'playful', label: 'Playful', icon: '🎾' },
+  { value: 'cuddly', label: 'Cuddly', icon: '🤗' },
+  { value: 'energetic', label: 'Energetic', icon: '⚡' },
+  { value: 'gentle', label: 'Gentle', icon: '🕊️' },
+  { value: 'smart', label: 'Smart', icon: '🧠' },
+  { value: 'friendly', label: 'Friendly', icon: '👋' },
+  { value: 'calm', label: 'Calm', icon: '😌' },
+  { value: 'affectionate', label: 'Affectionate', icon: '💕' },
+  { value: 'puppy', label: 'Puppy', icon: '🐾' },
+];
+
+const TRAIT_ALIASES = {
+  sweet: ['sweet', 'sweetheart'],
+  playful: ['playful', 'fetch-lover'],
+  cuddly: ['cuddly', 'cuddle-buddy', 'snuggly', 'lap-cat', 'cozy'],
+  energetic: ['energetic', 'snow-lover'],
+  gentle: ['gentle', 'calm', 'laid-back', 'chill'],
+  smart: ['smart', 'trainable', 'treat-motivated'],
+  friendly: ['friendly', 'people-lover', 'social', 'attention-lover'],
+  calm: ['calm', 'laid-back', 'chill', 'napper', 'gentle'],
+  affectionate: ['affectionate', 'loving', 'lovebug', 'belly-rub-lover'],
+  puppy: ['puppy'],
+};
+
 const dogCount = pets.filter(p => p.type === 'dog').length;
 const catCount = pets.filter(p => p.type === 'cat').length;
 const critterCount = pets.filter(p => p.type === 'critter').length;
 
-// Featured pets - longest waiting
-const featured = [...pets].sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded)).slice(0, 6);
+// Spotlight pet — longest waiting
+const spotlightPet = [...pets].sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded))[0];
+const spotlightDays = Math.floor((new Date() - new Date(spotlightPet.dateAdded)) / 86400000);
+
+// Badge logic
+function getPetBadge(pet) {
+  const days = Math.floor((new Date() - new Date(pet.dateAdded)) / 86400000);
+  if (days <= 7) return { type: 'new', label: '✨ New This Week', className: 'badge-new' };
+  if (days > 30) return { type: 'longtimer', label: `❤️ ${days} Days Waiting`, className: 'badge-longtimer' };
+  const popularTraits = ['playful', 'friendly', 'sweet', 'cuddly'];
+  if (pet.traits.some(t => popularTraits.includes(t))) return { type: 'popular', label: '🔥 Popular', className: 'badge-popular' };
+  return null;
+}
 
 function AnimatedNumber({ value }) {
   const [display, setDisplay] = useState(0);
@@ -43,94 +83,27 @@ function AnimatedNumber({ value }) {
   return <span>{display}</span>;
 }
 
-function FeaturedCarousel() {
-  const [active, setActive] = useState(0);
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setActive(prev => (prev + 1) % featured.length);
-    }, 4000);
-    return () => clearInterval(timerRef.current);
-  }, []);
-
-  const goTo = (i) => {
-    clearInterval(timerRef.current);
-    setActive(i);
-    timerRef.current = setInterval(() => {
-      setActive(prev => (prev + 1) % featured.length);
-    }, 4000);
-  };
-
-  return (
-    <div style={{ position: 'relative', marginTop: '48px' }}>
-      <h3 style={{ 
-        fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600,
-        color: 'var(--text-muted)', textAlign: 'center', marginBottom: '20px',
-        letterSpacing: '0.03em', textTransform: 'uppercase'
-      }}>
-        ✨ Waiting the Longest — Can You Give Them a Home?
-      </h3>
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '12px',
-        maxWidth: '900px', margin: '0 auto',
-      }}>
-        {featured.map((pet, i) => {
-          const isActive = i === active;
-          const days = Math.floor((new Date() - new Date(pet.dateAdded)) / 86400000);
-          return (
-            <Link href={`/adopt/${pet.id}`} key={pet.id}
-              onMouseEnter={() => goTo(i)}
-              style={{
-                borderRadius: 'var(--radius-lg)', overflow: 'hidden',
-                position: 'relative', cursor: 'pointer',
-                aspectRatio: '3/4',
-                transform: isActive ? 'scale(1.08)' : 'scale(0.95)',
-                opacity: isActive ? 1 : 0.6,
-                transition: 'all 0.5s cubic-bezier(0.16,1,0.3,1)',
-                boxShadow: isActive ? '0 12px 40px rgba(41,171,226,0.25)' : 'var(--shadow-sm)',
-                border: isActive ? '2px solid var(--blue-400)' : '2px solid transparent',
-              }}
-            >
-              <PetImage pet={pet} />
-              <div style={{
-                position: 'absolute', bottom: 0, left: 0, right: 0,
-                background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
-                padding: '24px 8px 8px', color: '#fff', textAlign: 'center',
-              }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.85rem' }}>{pet.name}</div>
-                <div style={{ fontSize: '0.65rem', opacity: 0.8 }}>{days} days waiting</div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-      <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '16px' }}>
-        {featured.map((_, i) => (
-          <button key={i} onClick={() => goTo(i)} style={{
-            width: i === active ? '24px' : '8px', height: '8px', borderRadius: '100px',
-            background: i === active ? 'var(--blue-500)' : 'var(--border-light)',
-            transition: 'all 0.3s ease', border: 'none', cursor: 'pointer',
-          }} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function AdoptPage() {
   useScrollReveal();
   const [typeFilter, setTypeFilter] = useState('all');
   const [ageFilter, setAgeFilter] = useState('all');
+  const [traitFilter, setTraitFilter] = useState(null);
   const [search, setSearch] = useState('');
   const [favorites, setFavorites] = useState([]);
   const [viewMode, setViewMode] = useState('grid');
   const [sort, setSort] = useState('name');
+  const [quizOpen, setQuizOpen] = useState(false);
 
   const filtered = useMemo(() => {
     let result = pets.filter(p => {
+      // Exclude spotlight pet from grid
+      if (p.id === spotlightPet.id && typeFilter === 'all' && ageFilter === 'all' && !search && !traitFilter) return false;
       if (typeFilter !== 'all' && p.type !== typeFilter) return false;
       if (ageFilter !== 'all' && p.age !== ageFilter) return false;
+      if (traitFilter) {
+        const aliases = TRAIT_ALIASES[traitFilter] || [traitFilter];
+        if (!p.traits.some(t => aliases.includes(t.toLowerCase()))) return false;
+      }
       if (search) {
         const q = search.toLowerCase();
         return p.name.toLowerCase().includes(q) || p.breed.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
@@ -141,14 +114,19 @@ export default function AdoptPage() {
     else if (sort === 'newest') result.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
     else if (sort === 'oldest') result.sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded));
     return result;
-  }, [typeFilter, ageFilter, search, sort]);
+  }, [typeFilter, ageFilter, traitFilter, search, sort]);
 
   function toggleFav(id) {
     setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
   }
 
+  const showSpotlight = typeFilter === 'all' && ageFilter === 'all' && !search && !traitFilter;
+
   return (
     <>
+      {/* Pet Match Quiz Modal */}
+      <PetMatchQuiz isOpen={quizOpen} onClose={() => setQuizOpen(false)} />
+
       {/* Hero Section */}
       <section style={{ 
         paddingTop: '120px', paddingBottom: '48px', 
@@ -159,22 +137,6 @@ export default function AdoptPage() {
         <div style={{ position: 'absolute', top: '-30%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(41,171,226,0.06) 0%, transparent 70%)', borderRadius: '50%' }} />
         <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)', borderRadius: '50%' }} />
         
-        {/* Floating paw prints */}
-        {[
-          { top: '15%', left: '5%', size: '28px', rotate: '-20deg', delay: '0s', duration: '6s' },
-          { top: '25%', right: '8%', size: '22px', rotate: '30deg', delay: '1s', duration: '7s' },
-          { top: '60%', left: '12%', size: '18px', rotate: '10deg', delay: '2s', duration: '5s' },
-          { top: '70%', right: '15%', size: '24px', rotate: '-15deg', delay: '0.5s', duration: '8s' },
-        ].map((paw, i) => (
-          <div key={i} style={{
-            position: 'absolute', ...paw, fontSize: paw.size,
-            opacity: 0.08, pointerEvents: 'none',
-            animation: `pawFloat ${paw.duration} ease-in-out infinite`,
-            animationDelay: paw.delay,
-            transform: `rotate(${paw.rotate})`,
-          }}>🐾</div>
-        ))}
-
         <div className="container text-center" style={{ position: 'relative' }}>
           <span className="badge badge-blue" style={{ 
             marginBottom: '16px', display: 'inline-flex', alignItems: 'center', gap: '6px',
@@ -224,6 +186,18 @@ export default function AdoptPage() {
             ))}
           </div>
 
+          {/* Quiz CTA Banner */}
+          <button className="quiz-cta-banner" onClick={() => setQuizOpen(true)}
+            style={{ animation: 'fadeInUp 0.8s ease 0.8s both' }}>
+            <div className="quiz-cta-icon">
+              <Icon name="heart" size={22} color="#fff" />
+            </div>
+            <div className="quiz-cta-text">
+              <h4>Not sure where to start?</h4>
+              <p>Take our 60-second quiz to find your perfect match →</p>
+            </div>
+          </button>
+
           {/* Featured Carousel */}
           <FeaturedCarousel />
         </div>
@@ -235,7 +209,7 @@ export default function AdoptPage() {
           {/* Filters Bar */}
           <div className="reveal" style={{
             display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap',
-            padding: '16px 20px', marginBottom: '20px',
+            padding: '16px 20px', marginBottom: '12px',
             background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-light)',
           }}>
@@ -268,10 +242,30 @@ export default function AdoptPage() {
             </div>
           </div>
 
+          {/* Personality Trait Filter Chips */}
+          <div className="reveal trait-filters">
+            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginRight: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Icon name="heart" size={12} color="var(--text-muted)" /> Personality:
+            </span>
+            {TRAIT_CHIPS.map(chip => (
+              <button
+                key={chip.value}
+                className={`trait-chip ${traitFilter === chip.value ? 'active' : ''}`}
+                onClick={() => setTraitFilter(traitFilter === chip.value ? null : chip.value)}
+              >
+                {chip.icon} {chip.label}
+              </button>
+            ))}
+          </div>
+
           {/* Toolbar */}
           <div className="reveal" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
             <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
               Showing <strong style={{ color: 'var(--text-primary)' }}>{filtered.length}</strong> of {pets.length} pets
+              {traitFilter && <span style={{ marginLeft: '8px' }}>
+                · Filtered by <strong style={{ color: 'var(--blue-500)' }}>{traitFilter}</strong>
+                <button onClick={() => setTraitFilter(null)} style={{ marginLeft: '4px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>✕</button>
+              </span>}
               {favorites.length > 0 && <span style={{ marginLeft: '16px', color: 'var(--rose-500)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                 <Icon name="heart" size={14} color="var(--rose-500)" /> {favorites.length} saved
               </span>}
@@ -295,13 +289,49 @@ export default function AdoptPage() {
             </div>
           </div>
 
+          {/* Spotlight Pet — Longest Waiting */}
+          {showSpotlight && (
+            <Link href={`/adopt/${spotlightPet.id}`} className="spotlight-card reveal">
+              <div className="spotlight-img">
+                <PetImage pet={spotlightPet} />
+              </div>
+              <div className="spotlight-body">
+                <div className="spotlight-label">
+                  <Icon name="heart" size={12} color="#fff" /> Longest Waiting — {spotlightDays} Days
+                </div>
+                <h2 className="spotlight-name">{spotlightPet.name}</h2>
+                <p className="spotlight-meta">{spotlightPet.breed} · {spotlightPet.age} · {spotlightPet.gender}</p>
+                <p className="spotlight-desc">{spotlightPet.description}</p>
+                <div className="spotlight-traits">
+                  {spotlightPet.traits.map(t => (
+                    <span key={t} className="badge badge-blue">{t.replace(/-/g, ' ')}</span>
+                  ))}
+                  {spotlightPet.restrictions.map(r => (
+                    <span key={r} className="badge badge-rose" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                      <Icon name="shield" size={10} color="var(--rose-600)" /> {r.replace(/-/g, ' ')}
+                    </span>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <span className="btn btn-primary" style={{ borderRadius: 'var(--radius-xl)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <Icon name="paw" size={16} color="#fff" /> Meet {spotlightPet.name.split(' ')[0]}
+                  </span>
+                  <span className="btn btn-secondary" style={{ borderRadius: 'var(--radius-xl)' }}>
+                    Learn More
+                  </span>
+                </div>
+              </div>
+            </Link>
+          )}
+
           {/* Pet Display */}
           {filtered.length === 0 ? (
             <div className="text-center" style={{ padding: '80px 0', color: 'var(--text-muted)' }}>
               <IconCircle name="search" size={80} color="var(--text-muted)" bgOpacity={0.08} style={{ margin: '0 auto 16px' }} />
               <h3>No pets found matching your criteria</h3>
-              <p style={{ marginBottom: '16px' }}>Try adjusting your filters or search.</p>
-              <button className="btn btn-sm btn-secondary" onClick={() => { setTypeFilter('all'); setAgeFilter('all'); setSearch(''); }}>
+              <p style={{ marginBottom: '8px' }}>Try adjusting your filters or search.</p>
+              <p style={{ fontSize: '0.85rem', marginBottom: '16px' }}>Every pet deserves a chance — try broadening your search! 💛</p>
+              <button className="btn btn-sm btn-secondary" onClick={() => { setTypeFilter('all'); setAgeFilter('all'); setSearch(''); setTraitFilter(null); }}>
                 Clear All Filters
               </button>
             </div>
@@ -309,6 +339,7 @@ export default function AdoptPage() {
             <div className="pet-grid">
               {filtered.map((pet, i) => {
                 const days = Math.floor((new Date() - new Date(pet.dateAdded)) / 86400000);
+                const badge = getPetBadge(pet);
                 return (
                   <div key={pet.id} className="pet-card card-3d" style={{ animationDelay: `${i * 0.05}s` }}>
                     <Link href={`/adopt/${pet.id}`}>
@@ -319,16 +350,17 @@ export default function AdoptPage() {
                             <Icon name="check" size={12} color="var(--green-800)" /> Available
                           </span>
                         </span>
-                        {/* Days waiting badge */}
-                        {days > 20 && (
+                        {/* Smart Badge */}
+                        {badge && (
                           <div style={{
                             position: 'absolute', bottom: '10px', left: '10px', zIndex: 2,
-                            padding: '4px 10px', borderRadius: '100px',
-                            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)',
-                            color: '#fff', fontSize: '0.7rem', fontWeight: 600,
-                            display: 'flex', alignItems: 'center', gap: '4px',
                           }}>
-                            <Icon name="clock" size={10} color="#fff" /> {days} days waiting
+                            <span className={`badge ${badge.className}`} style={{ 
+                              display: 'inline-flex', alignItems: 'center', gap: '4px',
+                              backdropFilter: 'blur(6px)', fontSize: '0.7rem',
+                            }}>
+                              {badge.label}
+                            </span>
                           </div>
                         )}
                         {/* Quick View Overlay */}
@@ -387,17 +419,18 @@ export default function AdoptPage() {
             <div style={{ display: 'grid', gap: '16px' }}>
               {filtered.map((pet) => {
                 const days = Math.floor((new Date() - new Date(pet.dateAdded)) / 86400000);
+                const badge = getPetBadge(pet);
                 return (
                   <Link href={`/adopt/${pet.id}`} key={pet.id} className="pet-list-card">
                     <div style={{ width: '160px', minHeight: '120px', flexShrink: 0, overflow: 'hidden' }}><PetImage pet={pet} /></div>
                     <div className="pet-list-card-body">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px', flexWrap: 'wrap' }}>
                         <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.15rem', fontWeight: 700 }}>{pet.name}</h3>
                         <span style={{ fontSize: '0.9rem' }}>{TYPE_EMOJI[pet.type]}</span>
                         <span className="badge badge-green" style={{ fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                           <Icon name="check" size={10} color="var(--green-800)" /> Available
                         </span>
-                        {days > 20 && <span className="badge badge-blue" style={{ fontSize: '0.65rem' }}>{days}d waiting</span>}
+                        {badge && <span className={`badge ${badge.className}`} style={{ fontSize: '0.65rem' }}>{badge.label}</span>}
                       </div>
                       <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '8px' }}>{pet.breed} · {pet.age} · {pet.gender}</p>
                       <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: '1.6' }}>{pet.description.slice(0, 150)}...</p>
@@ -416,6 +449,76 @@ export default function AdoptPage() {
               })}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Success Stories */}
+      <section className="stories-section">
+        <div className="container">
+          <div className="text-center reveal" style={{ marginBottom: '40px' }}>
+            <span className="badge badge-green" style={{ marginBottom: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Icon name="heart" size={12} color="var(--green-700)" /> Happy Tails
+            </span>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', marginBottom: '8px' }}>
+              Stories That <span className="text-gradient">Warm Our Hearts</span>
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '500px', margin: '0 auto', fontSize: '0.95rem' }}>
+              Real families. Real love. Hear from families who found their perfect companion right here.
+            </p>
+          </div>
+        </div>
+        <div className="stories-track">
+          {/* Spacer for centering */}
+          <div style={{ flexShrink: 0, width: 'max(0px, calc((100vw - 1200px) / 2))' }} />
+          {successStories.map(story => (
+            <div key={story.id} className="story-adopt-card">
+              <div className="story-emoji">{story.emoji}</div>
+              <p className="story-quote">&ldquo;{story.quote}&rdquo;</p>
+              <div className="story-footer">
+                <div>
+                  <div className="story-author">{story.adopterName}</div>
+                  <div className="story-pet">Adopted {story.petName}</div>
+                </div>
+                <div className="story-time">{story.timeAdopted}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{ flexShrink: 0, width: '24px' }} />
+        </div>
+      </section>
+
+      {/* Adoption Fees */}
+      <section className="section" style={{ paddingTop: '60px', paddingBottom: '60px' }}>
+        <div className="container">
+          <div className="text-center reveal" style={{ marginBottom: '40px' }}>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', marginBottom: '8px' }}>
+              Adoption <span className="text-gradient">Fees</span>
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '560px', margin: '0 auto', fontSize: '0.95rem' }}>
+              Every adoption includes spay/neuter, vaccinations, microchip, deworming, and a vet health check. 
+              Your fee helps us continue rescuing animals in need.
+            </p>
+          </div>
+          <div className="fees-grid">
+            {[
+              { type: 'Dog', emoji: '🐕', price: '$350', includes: ['Spay/Neuter surgery', 'Core vaccinations', 'Microchip & registration', 'Deworming treatment', 'Veterinary health check', '30-day health guarantee'] },
+              { type: 'Cat', emoji: '🐈', price: '$175', includes: ['Spay/Neuter surgery', 'Core vaccinations', 'Microchip & registration', 'Deworming & flea treatment', 'Veterinary health check', 'Bonded pairs: $250 total'] },
+              { type: 'Critter', emoji: '🐦', price: '$25+', includes: ['Health assessment', 'Any required treatments', 'Care supply starter kit', 'Adoption counselling'] },
+            ].map((fee, i) => (
+              <div key={fee.type} className="fee-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="fee-card-emoji">{fee.emoji}</div>
+                <div className="fee-card-type">{fee.type} Adoption</div>
+                <div className="fee-card-price">{fee.price}</div>
+                <ul className="fee-card-includes">
+                  {fee.includes.map(item => (
+                    <li key={item}>
+                      <Icon name="check" size={14} color="var(--green-500)" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

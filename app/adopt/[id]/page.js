@@ -6,6 +6,112 @@ import PetImage from '@/components/pets/PetImage';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import Icon, { IconCircle } from '@/components/ui/Icon';
 
+// Trait scoring for radar chart
+const ENERGY_TRAITS = ['energetic', 'playful', 'fetch-lover', 'snow-lover'];
+const FRIENDLY_TRAITS = ['friendly', 'people-lover', 'social', 'attention-lover', 'sweet'];
+const TRAIN_TRAITS = ['smart', 'trainable', 'treat-motivated'];
+const INDEPENDENT_TRAITS = ['calm', 'laid-back', 'chill', 'napper', 'shy-at-first'];
+const CUDDLY_TRAITS = ['cuddly', 'lap-cat', 'snuggly', 'cuddle-buddy', 'affectionate', 'loving', 'lovebug', 'belly-rub-lover', 'cozy'];
+
+function getRadarScores(pet) {
+  const traits = pet.traits.map(t => t.toLowerCase());
+  const score = (arr) => Math.min(5, Math.max(1, 1 + arr.filter(t => traits.includes(t)).length * 1.5));
+  return {
+    Energy: score(ENERGY_TRAITS),
+    Friendliness: score(FRIENDLY_TRAITS),
+    Trainability: score(TRAIN_TRAITS),
+    Independence: score(INDEPENDENT_TRAITS),
+    Cuddliness: score(CUDDLY_TRAITS),
+  };
+}
+
+function RadarChart({ scores }) {
+  const labels = Object.keys(scores);
+  const values = Object.values(scores);
+  const cx = 100, cy = 100, r = 70;
+  const angleStep = (2 * Math.PI) / labels.length;
+  const startAngle = -Math.PI / 2;
+  
+  const getPoint = (value, index) => {
+    const angle = startAngle + angleStep * index;
+    const dist = (value / 5) * r;
+    return { x: cx + dist * Math.cos(angle), y: cy + dist * Math.sin(angle) };
+  };
+
+  const gridLevels = [1, 2, 3, 4, 5];
+  
+  return (
+    <div className="radar-chart">
+      <svg viewBox="0 0 200 200">
+        {/* Grid lines */}
+        {gridLevels.map(level => {
+          const points = labels.map((_, i) => getPoint(level, i));
+          return (
+            <polygon
+              key={level}
+              className="radar-grid-line"
+              points={points.map(p => `${p.x},${p.y}`).join(' ')}
+            />
+          );
+        })}
+        {/* Axis lines */}
+        {labels.map((_, i) => {
+          const p = getPoint(5, i);
+          return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} className="radar-grid-line" />;
+        })}
+        {/* Data polygon */}
+        <polygon
+          className="radar-data"
+          points={values.map((v, i) => { const p = getPoint(v, i); return `${p.x},${p.y}`; }).join(' ')}
+        />
+        {/* Data points */}
+        {values.map((v, i) => {
+          const p = getPoint(v, i);
+          return <circle key={i} cx={p.x} cy={p.y} className="radar-dot" />;
+        })}
+        {/* Labels */}
+        {labels.map((label, i) => {
+          const p = getPoint(6, i);
+          return (
+            <text key={label} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" className="radar-label">
+              {label}
+            </text>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function FaqAccordion({ items }) {
+  const [openIndex, setOpenIndex] = useState(null);
+  return (
+    <div className="faq-list">
+      {items.map((item, i) => (
+        <div key={i} className={`faq-item ${openIndex === i ? 'open' : ''}`}>
+          <button className="faq-trigger" onClick={() => setOpenIndex(openIndex === i ? null : i)}>
+            {item.q}
+            <svg className="faq-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+          <div className="faq-content">
+            <div className="faq-content-inner">{item.a}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const ADOPTION_FAQ = [
+  { q: 'What is the adoption fee?', a: 'Dog adoption fees are $350, cat fees are $175, and critter fees start at $25. All fees include spay/neuter, vaccinations, microchip, deworming, and a vet health check.' },
+  { q: 'Can I visit and meet the pet before adopting?', a: 'Absolutely! After your application is reviewed, we\'ll schedule a meet & greet so you and the pet can spend quality time together. We want to make sure it\'s the perfect match.' },
+  { q: 'How long does the adoption process take?', a: 'Application review typically takes 1-3 business days. After approval, you can schedule a meet & greet and potentially take your new friend home the same day!' },
+  { q: 'What if it doesn\'t work out?', a: 'We want every adoption to be a success. If things don\'t work out within the first 30 days, you can return the pet and we\'ll work with you to find a better match. No pet will be left without a plan.' },
+  { q: 'Do you offer a trial foster period?', a: 'Yes! We offer foster-to-adopt programs for pets who may benefit from a transition period. This lets both pet and family adjust before making it official.' },
+];
+
 export default function PetProfile({ params }) {
   const { id } = use(params);
   const pet = pets.find(p => p.id === id);
@@ -31,6 +137,7 @@ export default function PetProfile({ params }) {
   const typeIcon = pet.type === 'dog' ? 'dog' : pet.type === 'cat' ? 'cat' : 'bird';
   const typeLabel = pet.type === 'dog' ? 'Dog' : pet.type === 'cat' ? 'Cat' : 'Critter';
   const typeEmoji = pet.type === 'dog' ? '🐕' : pet.type === 'cat' ? '🐈' : '🐦';
+  const radarScores = getRadarScores(pet);
 
   return (
     <>
@@ -118,6 +225,28 @@ export default function PetProfile({ params }) {
                   ))}
                 </div>
               )}
+
+              {/* Personality Radar Chart */}
+              <div className="reveal" style={{
+                marginTop: '20px', padding: '20px',
+                background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-sm)',
+              }}>
+                <h4 style={{ fontSize: '0.9rem', textAlign: 'center', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <Icon name="paw" size={14} color="var(--blue-500)" /> Personality Profile
+                </h4>
+                <RadarChart scores={radarScores} />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginTop: '8px' }}>
+                  {Object.entries(radarScores).map(([key, val]) => (
+                    <span key={key} style={{
+                      fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)',
+                      padding: '2px 8px', background: 'var(--bg-secondary)', borderRadius: '100px',
+                    }}>
+                      {key}: {Math.round(val)}/5
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Info Column */}
@@ -166,7 +295,7 @@ export default function PetProfile({ params }) {
                 ))}
               </div>
 
-              {/* Adoption CTA */}
+              {/* Adoption CTA with social proof */}
               <div style={{
                 padding: '24px', borderRadius: 'var(--radius-lg)',
                 background: 'linear-gradient(135deg, var(--blue-50), var(--green-50))',
@@ -175,9 +304,17 @@ export default function PetProfile({ params }) {
                 <h4 style={{ fontSize: '1.05rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '1.2rem' }}>💛</span> Interested in {pet.name.split(' ')[0]}?
                 </h4>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.6' }}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: '1.6' }}>
                   Submit an adoption application and our team will be in touch to schedule a meet & greet!
                 </p>
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '8px 14px', background: 'rgba(245,158,11,0.08)', borderRadius: 'var(--radius-md)',
+                  marginBottom: '16px', fontSize: '0.78rem', color: '#B45309', fontWeight: 600,
+                }}>
+                  <Icon name="people" size={14} color="#B45309" />
+                  Other families are also interested in {pet.name.split(' ')[0]}
+                </div>
                 <div className="pet-profile-actions" style={{ gap: '10px' }}>
                   <Link href={`/apply/${pet.type}?pet=${pet.id}`} className="btn btn-primary btn-lg glow-border-hover" style={{ borderRadius: 'var(--radius-xl)', display: 'inline-flex', alignItems: 'center', gap: '8px', flex: 1 }}>
                     <Icon name="edit" size={18} color="#fff" /> Apply to Adopt
@@ -275,6 +412,23 @@ export default function PetProfile({ params }) {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Adoption FAQ */}
+      <section className="section" style={{ paddingTop: '60px', paddingBottom: '60px' }}>
+        <div className="container" style={{ maxWidth: '720px' }}>
+          <div className="text-center reveal" style={{ marginBottom: '32px' }}>
+            <h2 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', marginBottom: '8px' }}>
+              Adoption <span className="text-gradient">FAQ</span>
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              Common questions about bringing {pet.name.split(' ')[0]} home
+            </p>
+          </div>
+          <div className="reveal">
+            <FaqAccordion items={ADOPTION_FAQ} />
           </div>
         </div>
       </section>

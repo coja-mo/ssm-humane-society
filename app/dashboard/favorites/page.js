@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import allPets from '@/lib/data/pets.json';
 
 const MOCK_PETS = [
   { id: 'luna', name: 'Luna', breed: 'Domestic Shorthair', age: '2 years', sex: 'Female', emoji: '🐱', color: 'var(--blue-500)', traits: ['Friendly', 'Playful', 'Good with kids'], status: 'Available' },
@@ -24,11 +25,25 @@ export default function FavoritesPage() {
     if (!u) { router.push('/auth/login'); return; }
     setUser(JSON.parse(u));
 
-    // Load favorites — use mock data for demo
+    // Load favorites — try real pets.json data first, then mock
     const saved = localStorage.getItem('favorites');
     if (saved) {
       const ids = JSON.parse(saved);
-      setFavorites(MOCK_PETS.filter(p => ids.includes(p.id)));
+      const matched = ids.map(id => {
+        const realPet = allPets.find(p => p.id === id);
+        if (realPet) {
+          return {
+            id: realPet.id, name: realPet.name, breed: realPet.breed,
+            age: realPet.age, sex: realPet.sex,
+            emoji: realPet.type === 'dog' ? '🐕' : realPet.type === 'cat' ? '🐈' : '🐾',
+            color: realPet.type === 'dog' ? 'var(--blue-500)' : realPet.type === 'cat' ? 'var(--green-500)' : '#F59E0B',
+            traits: [realPet.breed, realPet.size || '', realPet.type].filter(Boolean),
+            status: realPet.status || 'Available',
+          };
+        }
+        return MOCK_PETS.find(p => p.id === id);
+      }).filter(Boolean);
+      setFavorites(matched.length > 0 ? matched : MOCK_PETS.slice(0, 3));
     } else {
       // Seed demo favorites
       setFavorites(MOCK_PETS.slice(0, 3));

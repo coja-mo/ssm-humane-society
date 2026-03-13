@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
-import Icon from '@/components/ui/Icon';
+import Icon, { IconCircle } from '@/components/ui/Icon';
 
 const FAQS = [
   { q: 'How do I adopt a pet?', a: 'Browse our available pets online, then fill out our interactive adoption application. Our staff will review your application and contact you within 2-3 business days. If approved, you\'ll be invited for a meet-and-greet!', icon: 'paw' },
@@ -74,6 +75,25 @@ export default function FAQPage() {
               <p>No questions match your search. <a href="/contact" style={{ color: 'var(--text-accent)', fontWeight: 600 }}>Contact us</a> directly!</p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="container text-center reveal" style={{ maxWidth: '500px' }}>
+          <IconCircle name="phone" size={52} color="var(--blue-400)" bgOpacity={0.12} style={{ margin: '0 auto 16px' }} />
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px' }}>Still Have <span className="text-gradient">Questions</span>?</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.7 }}>
+            Can&apos;t find what you&apos;re looking for? Our team is here to help.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/contact" className="btn btn-primary" style={{ borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <Icon name="mail" size={16} color="#fff" /> Contact Us
+            </Link>
+            <a href="tel:7059493573" className="btn btn-secondary" style={{ borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <Icon name="phone" size={16} /> 705-949-3573
+            </a>
+          </div>
         </div>
       </section>
     </>

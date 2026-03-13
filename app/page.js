@@ -326,18 +326,21 @@ export default function Home() {
           </div>
           <div className="grid-3 stagger">
             {[
-              { title: 'Online 50/50 Raffle', desc: 'Support the shelter and win big. Tickets available now — the jackpot keeps growing!', date: 'Mar 10', icon:'trophy' },
-              { title: 'Viewing Rooms Update', desc: 'All adoptions are done by application to ensure the best match for every family.', date: 'Mar 5', icon:'home' },
-              { title: 'Join Our Foster Team', desc: 'Dozens of animals get a second chance each year thanks to volunteer foster homes.', date: 'Feb 28', icon:'heart' },
+              { title: 'Online 50/50 Raffle', desc: 'Support the shelter and win big. Tickets available now — the jackpot keeps growing!', date: 'Mar 10', icon:'trophy', href: '/events' },
+              { title: 'Viewing Rooms Update', desc: 'All adoptions are done by application to ensure the best match for every family.', date: 'Mar 5', icon:'home', href: '/about' },
+              { title: 'Join Our Foster Team', desc: 'Dozens of animals get a second chance each year thanks to volunteer foster homes.', date: 'Feb 28', icon:'heart', href: '/foster' },
             ].map((item, i) => (
-              <div key={i} className="card" style={{ padding:'32px' }}>
+              <Link href={item.href} key={i} className="card" style={{ padding:'32px', textDecoration: 'none', color: 'inherit', transition: 'all 0.3s ease' }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'16px' }}>
                   <IconCircle name={item.icon} size={36} color="var(--blue-500)" bgOpacity={0.08} />
                   <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', letterSpacing:'0.03em' }}>{item.date}</span>
                 </div>
                 <h3 style={{ marginBottom:'10px', fontSize:'1.05rem' }}>{item.title}</h3>
-                <p style={{ color:'var(--text-secondary)', lineHeight:'1.7', fontSize:'0.9rem' }}>{item.desc}</p>
-              </div>
+                <p style={{ color:'var(--text-secondary)', lineHeight:'1.7', fontSize:'0.9rem', marginBottom: '12px' }}>{item.desc}</p>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--text-accent)', fontWeight: 600, fontSize: '0.85rem' }}>
+                  Read more <Icon name="arrow" size={14} color="var(--text-accent)" />
+                </span>
+              </Link>
             ))}
           </div>
         </div>
