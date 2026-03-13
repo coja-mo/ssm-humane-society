@@ -24,6 +24,21 @@ const MOCK_MESSAGES = [
     body: 'Hello,\n\nI wanted to let you know that Luna\'s vaccination records are up to date. She has received:\n• FVRCP (core vaccine)\n• Rabies vaccination\n• FeLV test (negative)\n\nShe is also spayed and microchipped. All records will be provided upon adoption.\n\nPlease let me know if you have any health-related questions.\n\nDr. Sarah Chen\nVeterinary Staff',
     time: '1 day ago', read: true, starred: false,
   },
+  {
+    id: '5', from: 'Volunteer Coordinator', fromRole: 'staff', subject: 'Volunteer Orientation This Saturday!',
+    body: 'Hi there!\n\nThank you for your interest in volunteering at the shelter. We\'d love to have you join our team!\n\nOur next volunteer orientation session is this Saturday from 10 AM - 12 PM. Here\'s what to expect:\n\n1. Welcome and introductions\n2. Shelter tour and safety guidelines\n3. Overview of volunteer roles\n4. Hands-on training with animals\n\nPlease wear closed-toe shoes and comfortable clothing. Light refreshments will be provided.\n\nLooking forward to meeting you!\n\nSarah Thompson\nVolunteer Coordinator',
+    time: '2 days ago', read: true, starred: false,
+  },
+  {
+    id: '6', from: 'Foster Program', fromRole: 'staff', subject: 'Foster a Kitten This Spring 🐱',
+    body: 'Hello!\n\nKitten season is approaching and we need foster families more than ever. Here\'s what you should know:\n\n🏠 We provide all supplies (food, litter, crate)\n🏥 All veterinary care is covered\n📋 Typical foster period: 2-8 weeks\n❤️ You help save lives!\n\nWe have kittens of all ages who need temporary loving homes. Even if you can only foster for a few weeks, it makes a huge difference.\n\nInterested? Reply to this message or visit our foster page for more details.\n\nThank you for making a difference!\nFoster Team',
+    time: '3 days ago', read: true, starred: true,
+  },
+  {
+    id: '7', from: 'SSM Humane Society', fromRole: 'system', subject: 'Pet Status Update — Buddy',
+    body: 'This is an automated notification.\n\nA pet you\'ve shown interest in has been updated:\n\n🐕 Buddy (Labrador Mix, Male, 3 years)\nStatus: Still Available\n\nBuddy has been at the shelter for 45 days and is eagerly waiting for his forever home. He\'s great with kids and other dogs.\n\nDon\'t miss your chance — schedule a visit today!\n\nView Buddy\'s profile: /adopt/buddy',
+    time: '4 days ago', read: true, starred: false,
+  },
 ];
 
 export default function MessagesPage() {
@@ -252,6 +267,22 @@ export default function MessagesPage() {
                     <button className="btn btn-ghost btn-sm" onClick={e => toggleStar(selected.id, e)}>
                       {selected.starred ? '★ Starred' : '☆ Star'}
                     </button>
+                  </div>
+                  {/* Quick Reply Suggestions */}
+                  <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-light)' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '10px', fontWeight: 600 }}>Quick Replies</div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {['Thank you for the update!', 'I have a question about this.', 'I\'d like to schedule a visit.'].map(reply => (
+                        <button key={reply} onClick={() => { setComposing(true); setSelectedId(null); setComposeData({ subject: `Re: ${selected.subject}`, body: reply }); }}
+                          style={{
+                            padding: '8px 14px', borderRadius: '100px', border: '1px solid var(--border-light)',
+                            background: 'var(--bg-secondary)', color: 'var(--text-secondary)', fontSize: '0.8rem',
+                            cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
+                          }}>
+                          {reply}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </>
               ) : null}
