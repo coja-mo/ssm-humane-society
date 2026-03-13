@@ -180,7 +180,65 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Our Team */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="container" style={{ maxWidth: '900px' }}>
+          <h2 className="text-center reveal" style={{ marginBottom: '8px' }}>Our <span className="text-gradient">Team</span></h2>
+          <p className="text-center reveal" style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '0.9rem' }}>
+            Dedicated professionals and volunteers who make it all possible
+          </p>
+          <div className="grid-3 stagger">
+            {[
+              { name: 'Karen MacDonald', role: 'Executive Director', years: 12, color: 'var(--blue-500)', initials: 'KM', desc: 'Leading shelter operations and community partnerships with 12 years of animal welfare experience.' },
+              { name: 'Dr. Lisa Chen', role: 'Shelter Veterinarian', years: 8, color: 'var(--green-500)', initials: 'LC', desc: 'Providing compassionate medical care for all shelter animals and overseeing health protocols.' },
+              { name: 'Mike Johnson', role: 'Adoptions Manager', years: 6, color: 'var(--rose-400)', initials: 'MJ', desc: 'Matching animals with their perfect families and managing the adoption process.' },
+              { name: 'Sarah Thompson', role: 'Volunteer Coordinator', years: 4, color: '#8B5CF6', initials: 'ST', desc: 'Recruiting, training, and scheduling our incredible team of 250+ volunteers.' },
+              { name: 'David Wright', role: 'Animal Care Lead', years: 10, color: 'var(--blue-400)', initials: 'DW', desc: 'Managing daily care routines, feeding schedules, and enrichment programs.' },
+              { name: 'Emily Parker', role: 'Community Outreach', years: 3, color: '#F59E0B', initials: 'EP', desc: 'Building relationships with schools, businesses, and organizations across the district.' },
+            ].map((member, i) => (
+              <div key={i} className="card card-3d" style={{ textAlign: 'center', padding: '28px' }}>
+                <div style={{
+                  width: '64px', height: '64px', borderRadius: '50%', margin: '0 auto 14px',
+                  background: `linear-gradient(135deg, ${member.color}22, ${member.color}44)`,
+                  border: `2px solid ${member.color}55`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontWeight: 800, fontSize: '1.1rem', color: member.color,
+                }}>
+                  {member.initials}
+                </div>
+                <h4 style={{ marginBottom: '4px', fontSize: '0.95rem' }}>{member.name}</h4>
+                <div style={{ fontSize: '0.78rem', color: member.color, fontWeight: 600, marginBottom: '8px' }}>{member.role}</div>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '8px' }}>{member.desc}</p>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{member.years} years of service</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values */}
       <section className="section">
+        <div className="container" style={{ maxWidth: '800px' }}>
+          <h2 className="text-center reveal" style={{ marginBottom: '32px' }}>Our Core <span className="text-gradient">Values</span></h2>
+          <div className="grid-4 stagger">
+            {[
+              { icon: 'heart', title: 'Compassion', desc: 'Every animal deserves kindness, care, and dignity', color: 'var(--rose-400)' },
+              { icon: 'shield', title: 'Integrity', desc: 'Transparent, ethical practices in everything we do', color: 'var(--blue-500)' },
+              { icon: 'people', title: 'Community', desc: 'Building partnerships that strengthen our mission', color: 'var(--green-500)' },
+              { icon: 'star', title: 'Excellence', desc: 'Setting the standard for animal welfare in our region', color: '#F59E0B' },
+            ].map((v, i) => (
+              <div key={i} className="card" style={{ textAlign: 'center', padding: '28px 16px' }}>
+                <IconCircle name={v.icon} size={48} color={v.color} bgOpacity={0.15} style={{ margin: '0 auto 14px' }} />
+                <h4 style={{ marginBottom: '6px', fontSize: '0.95rem' }}>{v.title}</h4>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: 1.5 }}>{v.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Visit Section */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
         <div className="container text-center reveal">
           <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Visit <span className="text-gradient">Our Shelter</span></h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>962 Second Line East, Sault Ste. Marie, ON P6B 4K4</p>
