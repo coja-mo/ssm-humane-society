@@ -134,15 +134,24 @@ export default function Footer() {
               <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><Icon name="location" size={14} color="#9CA3AF" /> 962 Second Line East</li>
               <li style={{ paddingLeft: '22px' }}>Sault Ste. Marie, ON P6B 4K4</li>
               <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><Icon name="phone" size={14} color="#9CA3AF" /> 705-949-3573</li>
+              <li style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><Icon name="mail" size={14} color="#9CA3AF" /> info@ssmhumanesociety.ca</li>
+              <li style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}><Icon name="clock" size={14} color="#9CA3AF" /> Mon–Sat: 12–5 PM</li>
+              <li style={{ paddingLeft: '22px' }}>Sunday: Closed</li>
               <li><Link href="/contact" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Contact Us <Icon name="arrow" size={14} /></Link></li>
             </ul>
           </div>
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Sault Ste. Marie Humane Society. All rights reserved.</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>Proud members of their community</span>
-            <Icon name="heart" size={16} color="var(--blue-400)" style={{ animation: 'heartbeat 2s ease-in-out infinite' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <Link href="/about" style={{ fontSize: '0.78rem', color: '#6B7280' }}>About</Link>
+            <Link href="/services" style={{ fontSize: '0.78rem', color: '#6B7280' }}>Services</Link>
+            <Link href="/faq" style={{ fontSize: '0.78rem', color: '#6B7280' }}>FAQ</Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>Made with</span>
+              <Icon name="heart" size={14} color="var(--blue-400)" style={{ animation: 'heartbeat 2s ease-in-out infinite' }} />
+              <span>in SSM</span>
+            </div>
           </div>
         </div>
       </div>
