@@ -37,16 +37,34 @@ export default function Navbar() {
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', onScroll, { passive: true });
-    const stored = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    setTheme(stored);
-    document.documentElement.setAttribute('data-theme', stored);
+
+    // Route-based defaults: home → dark, /adopt → light, others → light
+    const explicit = localStorage.getItem('themeExplicit');
+    let resolved;
+    if (explicit) {
+      // User has explicitly toggled — respect their choice
+      resolved = explicit;
+    } else {
+      // No explicit choice — use route-based defaults
+      if (pathname === '/') {
+        resolved = 'dark';
+      } else if (pathname.startsWith('/adopt')) {
+        resolved = 'light';
+      } else {
+        resolved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      }
+    }
+    setTheme(resolved);
+    localStorage.setItem('theme', resolved);
+    document.documentElement.setAttribute('data-theme', resolved);
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [pathname]);
 
   function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     localStorage.setItem('theme', next);
+    localStorage.setItem('themeExplicit', next);
     document.documentElement.setAttribute('data-theme', next);
   }
 
