@@ -15,6 +15,9 @@ import IntakeTab from '@/components/admin/IntakeTab';
 import SuppliesTab from '@/components/admin/SuppliesTab';
 import KennelsTab from '@/components/admin/KennelsTab';
 import MessagesTab from '@/components/admin/MessagesTab';
+import ReportsTab from '@/components/admin/ReportsTab';
+import ActivityTab from '@/components/admin/ActivityTab';
+import UsersTab from '@/components/admin/UsersTab';
 
 /* ─── SVG ICONS ─── */
 const Icons = {
@@ -355,82 +358,7 @@ export default function AdminDashboard() {
             <AnnouncementsTab announcements={announcements} onAdd={addAnnouncement} onUpdate={updateAnnouncement} onDelete={deleteAnnouncement} />
           )}
           {activeTab === 'users' && (
-            <>
-              <div className="admin-page-header">
-                <div>
-                  <h1 className="admin-page-title">User Management</h1>
-                  <p className="admin-page-subtitle">{users.length} registered {users.length === 1 ? 'user' : 'users'} across all roles</p>
-                </div>
-              </div>
-
-              {/* Role Summary */}
-              <div className="admin-stats" style={{ marginBottom: '24px' }}>
-                {[
-                  { label: 'Admins', val: users.filter(u => u.role === 'admin').length, accent: '#3B82F6', bg: '#EFF6FF', icon: '🛡️' },
-                  { label: 'Staff', val: users.filter(u => u.role === 'staff').length, accent: '#10B981', bg: '#ECFDF5', icon: '👔' },
-                  { label: 'Volunteers', val: users.filter(u => u.role === 'volunteer').length, accent: '#F59E0B', bg: '#FFFBEB', icon: '🤝' },
-                  { label: 'Adopters', val: users.filter(u => !u.role || u.role === 'adopter').length, accent: '#8B5CF6', bg: '#F5F3FF', icon: '🏠' },
-                ].map(s => (
-                  <div key={s.label} className="admin-stat-card" style={{ '--stat-accent': s.accent, '--stat-bg': s.bg }}>
-                    <div className="admin-stat-top">
-                      <div className="admin-stat-icon">{s.icon}</div>
-                    </div>
-                    <div className="admin-stat-value admin-counter">{s.val}</div>
-                    <div className="admin-stat-label">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Users List */}
-              <div className="admin-list">
-                {users.map(u => {
-                  const rc = roleColor(u.role);
-                  return (
-                    <div key={u.id} className="admin-list-item">
-                      <div className="admin-list-avatar" style={{ background: rc.bg, color: rc.text }}>
-                        {(u.name || u.email || '?')[0].toUpperCase()}
-                      </div>
-                      <div className="admin-list-info">
-                        <div className="admin-list-name">{u.name || 'Unnamed User'}</div>
-                        <div className="admin-list-meta">
-                          <span>{u.email}</span>
-                          <span>Joined {new Date(u.createdAt).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                      <div className="admin-list-actions">
-                        <select
-                          className="form-input form-select"
-                          value={u.role || 'adopter'}
-                          onChange={async (e) => {
-                            const res = await fetch(`/api/users/${u.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: e.target.value }) });
-                            if (res.ok) { const updated = await res.json(); setUsers(prev => prev.map(x => x.id === u.id ? updated : x)); }
-                          }}
-                          style={{ padding: '6px 32px 6px 12px', fontSize: '0.82rem', width: 'auto', borderRadius: '10px' }}
-                        >
-                          <option value="adopter">Adopter</option>
-                          <option value="volunteer">Volunteer</option>
-                          <option value="foster">Foster</option>
-                          <option value="staff">Staff</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                        <span className={`admin-status admin-status-${u.role === 'admin' ? 'approved' : u.role === 'staff' ? 'active' : 'applied'}`}>
-                          {u.role || 'adopter'}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-                {users.length === 0 && (
-                  <div className="admin-panel">
-                    <div className="admin-empty">
-                      <div className="admin-empty-icon">👥</div>
-                      <div className="admin-empty-title">No registered users</div>
-                      <div className="admin-empty-text">Users will appear here once they create accounts on the public site.</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
+            <UsersTab users={users} onUpdateUser={(id, updated) => setUsers(prev => prev.map(x => x.id === id ? updated : x))} />
           )}
           {activeTab === 'settings' && (
             <SettingsTab settings={settings} onSave={saveSettings} />
@@ -443,40 +371,7 @@ export default function AdminDashboard() {
 
           {/* ═══ ACTIVITY TAB ═══ */}
           {activeTab === 'activity' && (
-            <>
-              <div className="admin-page-header">
-                <div>
-                  <h1 className="admin-page-title">Activity Log</h1>
-                  <p className="admin-page-subtitle">System-wide audit trail — last {activity.length} entries</p>
-                </div>
-                <div className="admin-page-actions">
-                  <button className="btn btn-sm" onClick={seedData} style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--border-light)', borderRadius: '10px', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', color: 'var(--text-secondary)' }}>
-                    {Icons.seed} Seed Demo Data
-                  </button>
-                </div>
-              </div>
-              <div className="admin-panel">
-                <div className="admin-panel-body">
-                  <div className="admin-activity-feed">
-                    {activity.slice(0, 50).map((item, i) => (
-                      <div key={item.id || i} className="admin-activity-item">
-                        <div className="admin-activity-content">
-                          <div className="admin-activity-text">
-                            <strong>{item.action}</strong> — {item.entity}{item.details ? `: ${typeof item.details === 'string' ? item.details : JSON.stringify(item.details)}` : ''}
-                          </div>
-                          <div className="admin-activity-time">
-                            {new Date(item.timestamp || item.createdAt).toLocaleString()} {item.actor ? `• ${item.actor}` : ''}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {activity.length === 0 && (
-                      <div className="admin-empty"><div className="admin-empty-icon">📊</div><div className="admin-empty-title">No activity yet</div><div className="admin-empty-text">Activity will be logged as you use the system. Hit &quot;Seed Demo Data&quot; to generate sample entries.</div></div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </>
+            <ActivityTab activity={activity} onSeedData={seedData} />
           )}
 
           {/* ═══ LOST & FOUND TAB ═══ */}
@@ -491,112 +386,7 @@ export default function AdminDashboard() {
 
           {/* ═══ REPORTS TAB ═══ */}
           {activeTab === 'reports' && (
-            <>
-              <div className="admin-page-header">
-                <div>
-                  <h1 className="admin-page-title">Reports & Analytics</h1>
-                  <p className="admin-page-subtitle">Organization-wide insights and trends</p>
-                </div>
-                <div className="admin-page-actions">
-                  <button onClick={() => window.open('/api/export?entity=pets&format=csv')} style={{ background: 'var(--bg-secondary)', border: '1.5px solid var(--border-light)', borderRadius: '10px', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', color: 'var(--text-secondary)' }}>
-                    {Icons.download} Export Data
-                  </button>
-                </div>
-              </div>
-
-              {reports && (
-                <>
-                  {/* Summary Cards */}
-                  <div className="admin-stats" style={{ marginBottom: '24px' }}>
-                    {[
-                      { label: 'Available Pets', val: reports.summary?.availablePets || 0, color: 'var(--blue-500)' },
-                      { label: 'Adoptions', val: reports.summary?.approvedApplications || 0, color: 'var(--green-500)' },
-                      { label: 'Pending Apps', val: reports.summary?.pendingApplications || 0, color: 'var(--amber-500)' },
-                      { label: 'Total Donations', val: `$${(reports.summary?.totalDonations || 0).toLocaleString()}`, color: 'var(--rose-500)' },
-                      { label: 'Avg Donation', val: `$${reports.summary?.avgDonation || 0}`, color: 'var(--rose-400)' },
-                      { label: 'Active Volunteers', val: reports.summary?.activeVolunteers || 0, color: 'var(--blue-600)' },
-                      { label: 'Volunteer Hours', val: reports.summary?.totalVolunteerHours || 0, color: 'var(--blue-700)' },
-                      { label: 'Active Fosters', val: reports.summary?.activeFosters || 0, color: 'var(--green-600)' },
-                    ].map(s => (
-                      <div key={s.label} className="admin-stat-card" style={{ '--stat-accent': s.color }}>
-                        <div className="admin-stat-value">{s.val}</div>
-                        <div className="admin-stat-label">{s.label}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Monthly Trends Table */}
-                  <div className="admin-panel" style={{ marginBottom: '24px' }}>
-                    <div className="admin-panel-header"><div className="admin-panel-title">📊 Monthly Trends</div></div>
-                    <div className="admin-panel-body" style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid var(--border-light)' }}>
-                            <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700 }}>Month</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Apps</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Adoptions</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Donations ($)</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Intakes</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Volunteers</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'right' }}>Fosters</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {(reports.trends || []).map(t => (
-                            <tr key={t.month} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                              <td style={{ padding: '10px 12px', fontWeight: 600 }}>{t.month}</td>
-                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.applications}</td>
-                              <td style={{ padding: '10px 12px', textAlign: 'right', color: 'var(--green-600)', fontWeight: 600 }}>{t.adoptions}</td>
-                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>${t.donationAmount?.toLocaleString()}</td>
-                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.intakes}</td>
-                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.volunteers}</td>
-                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>{t.fosters}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Breakdowns */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-                    {[{ title: '🐾 Pet Types', data: reports.breakdowns?.petTypes },
-                      { title: '📋 Pet Status', data: reports.breakdowns?.petStatus },
-                      { title: '📝 Application Status', data: reports.breakdowns?.applicationStatus },
-                      { title: '🎂 Age Distribution', data: reports.breakdowns?.ageDistribution },
-                    ].map(b => (
-                      <div key={b.title} className="admin-panel">
-                        <div className="admin-panel-header"><div className="admin-panel-title">{b.title}</div></div>
-                        <div className="admin-panel-body">
-                          {b.data && Object.entries(b.data).map(([key, val]) => (
-                            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
-                              <span style={{ textTransform: 'capitalize', fontSize: '0.85rem' }}>{key.replace(/-/g, ' ')}</span>
-                              <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{val}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Export Options */}
-                  <div className="admin-panel" style={{ marginTop: '24px' }}>
-                    <div className="admin-panel-header"><div className="admin-panel-title">📥 Export Data</div></div>
-                    <div className="admin-panel-body">
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {['pets', 'applications', 'donations', 'volunteers', 'fosters', 'events', 'messages', 'lost-found'].map(entity => (
-                          <button key={entity} onClick={() => window.open(`/api/export?entity=${entity}&format=csv`)}
-                            style={{ padding: '8px 16px', borderRadius: '8px', border: '1.5px solid var(--border-light)', background: 'var(--bg-secondary)', cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontFamily: 'inherit' }}
-                          >
-                            {Icons.download} {entity.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} CSV
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
+            <ReportsTab reports={reports} pets={pets} apps={apps} donations={donations} volunteers={volunteers} fosters={fosters} events={events} intakes={intakes} />
           )}
 
           {/* ═══ SUPPLIES TAB ═══ */}
