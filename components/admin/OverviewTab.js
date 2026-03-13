@@ -335,6 +335,72 @@ export default function OverviewTab({ stats, loading, recentApps, onReviewApp, o
             )}
           </div>
         </div>
+
+        {/* Quick Actions */}
+        <div className="admin-panel" style={{ gridColumn: '1 / -1' }}>
+          <div className="admin-panel-header">
+            <div className="admin-panel-title">
+              <span style={{ fontSize: '1.1rem' }}>⚡</span> Quick Actions
+            </div>
+          </div>
+          <div className="admin-panel-body" style={{ padding: '16px 24px 20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
+              {[
+                { label: 'New Pet', icon: '🐾', action: () => onSwitchTab?.('pets'), color: '#EFF6FF' },
+                { label: 'Process App', icon: '📝', action: () => onSwitchTab?.('applications'), color: '#FEF3C7' },
+                { label: 'Log Donation', icon: '💰', action: () => onSwitchTab?.('donations'), color: '#F0FDF4' },
+                { label: 'Create Event', icon: '📅', action: () => onSwitchTab?.('events'), color: '#FFF7ED' },
+                { label: 'Send News', icon: '📢', action: () => onSwitchTab?.('announcements'), color: '#FDF2F8' },
+                { label: 'View Reports', icon: '📊', action: () => onSwitchTab?.('reports'), color: '#F5F3FF' },
+              ].map((item, i) => (
+                <button key={i} onClick={item.action}
+                  className="btn" style={{
+                    background: item.color, border: '1px solid var(--border-light)',
+                    padding: '14px 12px', borderRadius: 'var(--radius-md)',
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer',
+                    fontFamily: 'inherit', transition: 'all 0.2s',
+                  }}>
+                  <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Today's Tasks */}
+        <div className="admin-panel" style={{ gridColumn: '1 / -1' }}>
+          <div className="admin-panel-header">
+            <div className="admin-panel-title">
+              <span style={{ fontSize: '1.1rem' }}>✅</span> Today&apos;s Tasks
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </div>
+          </div>
+          <div className="admin-panel-body" style={{ padding: '12px 24px 20px' }}>
+            <div style={{ display: 'grid', gap: '8px' }}>
+              {[
+                { task: 'Morning health checks — all kennels', time: '6:30 AM', priority: 'high' },
+                { task: 'Review new applications (3 pending)', time: '9:00 AM', priority: 'high' },
+                { task: 'Kennel deep cleaning — Dog Wing B', time: '10:00 AM', priority: 'medium' },
+                { task: 'Volunteer orientation prep', time: '1:00 PM', priority: 'low' },
+                { task: 'Update pet profiles with new photos', time: '3:00 PM', priority: 'low' },
+              ].map((item, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px',
+                  background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
+                  borderLeft: `3px solid ${item.priority === 'high' ? '#EF4444' : item.priority === 'medium' ? '#F59E0B' : '#10B981'}`,
+                }}>
+                  <input type="checkbox" style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: 'var(--blue-500)' }} />
+                  <div style={{ flex: 1, fontSize: '0.88rem', fontWeight: 500 }}>{item.task}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{item.time}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
