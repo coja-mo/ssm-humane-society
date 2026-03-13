@@ -212,6 +212,90 @@ export default function LostFoundPage() {
           )}
         </div>
       </section>
+
+      {/* Tips & Resources */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="container" style={{ maxWidth: '900px' }}>
+          <h2 className="text-center reveal" style={{ marginBottom: '8px' }}>Helpful <span className="text-gradient">Tips</span></h2>
+          <p className="text-center reveal" style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '0.9rem' }}>Steps to increase your chances of a happy reunion</p>
+          <div className="grid-2 stagger" style={{ gap: '24px' }}>
+            <div className="card" style={{ padding: '28px' }}>
+              <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.05rem' }}>
+                <IconCircle name="search" size={36} color="var(--rose-500)" bgOpacity={0.15} /> If You&apos;ve Lost Your Pet
+              </h3>
+              <ol style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  'Search your neighbourhood immediately — pets often stay close',
+                  'Put their food, water, and a familiar blanket outside',
+                  'Post on local social media groups (SSM Lost Pets, Buy & Sell)',
+                  'Call the shelter at 705-949-3573 to check incoming strays',
+                  'Contact local vet clinics — someone may bring them in',
+                  'Put up posters with a clear photo and your phone number',
+                ].map((tip, i) => (
+                  <li key={i} style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{tip}</li>
+                ))}
+              </ol>
+            </div>
+            <div className="card" style={{ padding: '28px' }}>
+              <h3 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.05rem' }}>
+                <IconCircle name="heart" size={36} color="var(--green-500)" bgOpacity={0.15} /> If You&apos;ve Found a Pet
+              </h3>
+              <ol style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {[
+                  'Check for an ID tag or collar with contact information',
+                  'Take the pet to a vet or shelter to scan for a microchip',
+                  'Post a "Found" report here and on social media',
+                  'Do NOT post identifying details publicly — ask the owner to describe them',
+                  'Provide food, water, and a safe space while searching for the owner',
+                ].map((tip, i) => (
+                  <li key={i} style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{tip}</li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Microchip CTA */}
+      <section className="section">
+        <div className="container" style={{ maxWidth: '700px' }}>
+          <div className="card card-3d reveal" style={{ padding: '32px', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+            <IconCircle name="shield" size={56} color="var(--blue-500)" bgOpacity={0.15} style={{ flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <h3 style={{ marginBottom: '6px' }}>Microchip Your Pet</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.6 }}>
+                Microchipped pets are <strong>20x more likely</strong> to be returned. Our shelter offers microchipping for just $25. Contact us to schedule.
+              </p>
+            </div>
+            <a href="tel:7059493573" className="btn btn-primary btn-sm" style={{ borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+              <Icon name="phone" size={14} color="#fff" /> 705-949-3573
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Emergency Contacts */}
+      <section className="section section-dark" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(244,63,94,0.08) 0%, transparent 60%)', borderRadius: '50%' }} />
+        <div className="container text-center" style={{ maxWidth: '600px', position: 'relative' }}>
+          <h2 className="reveal" style={{ marginBottom: '12px' }}>Need <span style={{ color: 'var(--rose-400)' }}>Immediate Help</span>?</h2>
+          <p className="reveal" style={{ color: '#94A3B8', marginBottom: '28px', lineHeight: 1.7 }}>
+            If you&apos;ve found an injured or distressed animal, contact us immediately.
+          </p>
+          <div className="grid-2 stagger" style={{ gap: '16px' }}>
+            <a href="tel:7059493573" className="card" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', padding: '24px', textAlign: 'center', textDecoration: 'none', color: 'inherit' }}>
+              <IconCircle name="phone" size={44} color="var(--green-400)" bgOpacity={0.15} style={{ margin: '0 auto 10px' }} />
+              <h4 style={{ color: '#F1F5F9', marginBottom: '4px' }}>Call Us</h4>
+              <p style={{ color: 'var(--green-400)', fontWeight: 700 }}>705-949-3573</p>
+            </a>
+            <a href="mailto:info@ssmhumanesociety.ca" className="card" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', padding: '24px', textAlign: 'center', textDecoration: 'none', color: 'inherit' }}>
+              <IconCircle name="mail" size={44} color="var(--blue-400)" bgOpacity={0.15} style={{ margin: '0 auto 10px' }} />
+              <h4 style={{ color: '#F1F5F9', marginBottom: '4px' }}>Email Us</h4>
+              <p style={{ color: 'var(--blue-400)', fontWeight: 700, fontSize: '0.9rem' }}>info@ssmhumanesociety.ca</p>
+            </a>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
