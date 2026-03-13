@@ -12,8 +12,9 @@ export default function FeaturedCarousel() {
   const rafRef = useRef(null);
   const speedRef = useRef(0.6); // px per frame
 
-  // Duplicate pets for seamless infinite loop
-  const allPets = [...pets, ...pets, ...pets];
+  // Use a subset of pets for performance — 12 featured pets tripled for seamless loop
+  const featuredPets = pets.slice(0, 12);
+  const allPets = [...featuredPets, ...featuredPets, ...featuredPets];
 
   // Auto-scroll loop via requestAnimationFrame
   useEffect(() => {

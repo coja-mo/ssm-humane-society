@@ -822,10 +822,16 @@ html { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) transparent; }
 }
 .featured-carousel::before {
   left: 0;
-  background: linear-gradient(to right, var(--bg-primary) 0%, transparent 100%);
+  background: linear-gradient(to right, var(--blue-50) 0%, transparent 100%);
 }
 .featured-carousel::after {
   right: 0;
+  background: linear-gradient(to left, var(--blue-50) 0%, transparent 100%);
+}
+[data-theme="dark"] .featured-carousel::before {
+  background: linear-gradient(to right, var(--bg-primary) 0%, transparent 100%);
+}
+[data-theme="dark"] .featured-carousel::after {
   background: linear-gradient(to left, var(--bg-primary) 0%, transparent 100%);
 }
 
