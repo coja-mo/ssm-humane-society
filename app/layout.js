@@ -1,13 +1,10 @@
 import './globals.css';
-import dynamic from 'next/dynamic';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-
-// Lazy-load decorative/non-critical effects — they don't block first paint
-const PawBackground = dynamic(() => import('@/components/effects/PawBackground'), { ssr: false });
-const CursorGlow = dynamic(() => import('@/components/effects/CursorGlow'), { ssr: false });
-const ScrollProgress = dynamic(() => import('@/components/effects/ScrollProgress'), { ssr: false });
-const BackToTop = dynamic(() => import('@/components/effects/BackToTop'), { ssr: false });
+import PawBackground from '@/components/effects/PawBackground';
+import CursorGlow from '@/components/effects/CursorGlow';
+import ScrollProgress from '@/components/effects/ScrollProgress';
+import BackToTop from '@/components/effects/BackToTop';
 
 export const metadata = {
   metadataBase: new URL('https://ssmhumanesociety.ca'),
