@@ -131,6 +131,50 @@ export default function ActivityPage() {
           })}
         </div>
 
+        {/* Weekly Activity Chart */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px', marginBottom: '24px' }}>
+          <div className="card" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '0.95rem' }}>Weekly Activity</h3>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Last 7 days</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '120px' }}>
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+                const heights = [40, 25, 60, 35, 80, 100, 55];
+                return (
+                  <div key={day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                    <div style={{
+                      width: '100%', maxWidth: '36px', height: `${heights[i]}%`, minHeight: '8px',
+                      background: i === 5 ? 'linear-gradient(180deg, var(--blue-400), var(--blue-600))' : 'var(--bg-secondary)',
+                      borderRadius: '6px 6px 2px 2px',
+                      transition: 'all 0.3s ease',
+                    }} />
+                    <span style={{ fontSize: '0.68rem', color: i === 5 ? 'var(--text-accent)' : 'var(--text-muted)', fontWeight: i === 5 ? 700 : 400 }}>{day}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="card" style={{ padding: '24px' }}>
+            <h3 style={{ fontSize: '0.95rem', marginBottom: '16px' }}>Engagement</h3>
+            <div style={{ display: 'grid', gap: '14px' }}>
+              {[
+                { label: 'Avg. daily actions', value: '3.2', icon: '📊' },
+                { label: 'Most active day', value: 'Saturday', icon: '🔥' },
+                { label: 'Current streak', value: '4 days', icon: '⚡' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                  <div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 700 }}>{item.value}</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{item.label}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Grouped Timeline */}
         <div className="card" style={{ padding: '32px 32px 32px 48px' }}>
           {groups.map(group => (
