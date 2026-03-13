@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import useScrollReveal from '@/components/effects/useScrollReveal';
 import AnimatedCounter from '@/components/effects/AnimatedCounter';
 import Icon, { IconCircle } from '@/components/ui/Icon';
@@ -211,6 +212,68 @@ export default function DonatePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* More Ways to Give */}
+      <section className="section" style={{ background: 'var(--bg-secondary)' }}>
+        <div className="container" style={{ maxWidth: '900px' }}>
+          <h2 className="text-center reveal" style={{ marginBottom: '8px' }}>More Ways to <span className="text-gradient">Give</span></h2>
+          <p className="text-center reveal" style={{ color: 'var(--text-muted)', marginBottom: '32px', fontSize: '0.9rem' }}>Every act of generosity makes a difference</p>
+          <div className="grid-4 stagger">
+            {[
+              { icon: 'paw', title: 'In-Kind Donations', desc: 'Drop off food, blankets, toys, and cleaning supplies at the shelter.', color: 'var(--blue-400)' },
+              { icon: 'book', title: 'Amazon Wishlist', desc: 'Order supplies directly from our Amazon wishlist and ship them to us.', color: '#F59E0B' },
+              { icon: 'people', title: 'Corporate Matching', desc: 'Many employers match charitable donations. Double your impact!', color: 'var(--green-500)' },
+              { icon: 'calendar', title: 'Planned Giving', desc: 'Include us in your will or estate plan and leave a lasting legacy.', color: '#8B5CF6' },
+            ].map((item, i) => (
+              <div key={i} className="card" style={{ textAlign: 'center', padding: '28px 20px' }}>
+                <IconCircle name={item.icon} size={48} color={item.color} bgOpacity={0.15} style={{ margin: '0 auto 14px' }} />
+                <h4 style={{ marginBottom: '8px', fontSize: '0.95rem' }}>{item.title}</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: 1.6 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Donor Testimonial */}
+      <section className="section">
+        <div className="container" style={{ maxWidth: '650px' }}>
+          <div className="story-card reveal-scale" style={{ padding: '40px', textAlign: 'center' }}>
+            <IconCircle name="heart" size={56} color="var(--rose-400)" bgOpacity={0.15} style={{ margin: '0 auto 20px' }} />
+            <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: 1.9, maxWidth: '480px', margin: '0 auto 20px', fontSize: '1.05rem' }}>
+              &ldquo;Knowing that my monthly donation helps feed and care for 100+ animals gives me so much peace. This shelter is doing incredible work for Sault Ste. Marie.&rdquo;
+            </p>
+            <p style={{ fontWeight: 700 }}>— Jennifer W.</p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Monthly donor since 2022</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Legacy & Memorial Giving */}
+      <section className="section section-dark" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(244,63,94,0.08) 0%, transparent 60%)', borderRadius: '50%' }} />
+        <div className="container text-center" style={{ maxWidth: '600px', position: 'relative' }}>
+          <h2 className="reveal" style={{ marginBottom: '12px' }}>Leave a <span style={{ color: 'var(--rose-400)' }}>Lasting Legacy</span></h2>
+          <p className="reveal" style={{ color: '#94A3B8', marginBottom: '32px', lineHeight: 1.7 }}>
+            Honor someone special with a memorial or tribute donation. We&apos;ll send a beautiful card acknowledging your gift.
+          </p>
+          <div className="grid-2 stagger" style={{ gap: '16px', marginBottom: '32px' }}>
+            {[
+              { title: 'Memorial Donation', desc: 'Honor the memory of a loved one or beloved pet', icon: 'ribbon', color: 'var(--rose-400)' },
+              { title: 'Tribute Donation', desc: 'Celebrate a birthday, anniversary, or special occasion', icon: 'star', color: '#F59E0B' },
+            ].map((item, i) => (
+              <div key={i} className="card" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', padding: '28px', textAlign: 'center' }}>
+                <IconCircle name={item.icon} size={44} color={item.color} bgOpacity={0.15} style={{ margin: '0 auto 12px' }} />
+                <h4 style={{ color: '#F1F5F9', marginBottom: '6px' }}>{item.title}</h4>
+                <p style={{ color: '#94A3B8', fontSize: '0.85rem' }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <Link href="/contact" className="btn btn-primary btn-lg reveal" style={{ borderRadius: '100px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <Icon name="mail" size={18} color="#fff" /> Contact Us
+          </Link>
         </div>
       </section>
     </>
