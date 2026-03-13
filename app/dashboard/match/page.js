@@ -90,6 +90,10 @@ function getMatches(answers) {
     { name: 'Rocky', breed: 'German Shepherd Mix', type: 'dog', age: 'adult', energy: 'high', emoji: '🐕', traits: ['Protective', 'Loyal'] },
     { name: 'Cleo', breed: 'Domestic Longhair', type: 'cat', age: 'puppy', energy: 'moderate', emoji: '🐱', traits: ['Curious', 'Fluffy'] },
     { name: 'Charlie', breed: 'Golden Retriever', type: 'dog', age: 'puppy', energy: 'high', emoji: '🐶', traits: ['Friendly', 'Gentle'] },
+    { name: 'Daisy', breed: 'Poodle Mix', type: 'dog', age: 'adult', energy: 'moderate', emoji: '🐩', traits: ['Smart', 'Hypoallergenic'] },
+    { name: 'Shadow', breed: 'Black Cat', type: 'cat', age: 'young', energy: 'low', emoji: '🐈‍⬛', traits: ['Independent', 'Mysterious'] },
+    { name: 'Pepper', breed: 'Chihuahua Mix', type: 'dog', age: 'senior', energy: 'low', emoji: '🐕', traits: ['Cuddly', 'Tiny'] },
+    { name: 'Maple', breed: 'Maine Coon Mix', type: 'cat', age: 'adult', energy: 'moderate', emoji: '🐱', traits: ['Majestic', 'Gentle Giant'] },
   ];
 
   return matches.map(pet => {
@@ -97,6 +101,8 @@ function getMatches(answers) {
     if (answers.type === pet.type || answers.type === 'either') score += 15;
     if (answers.energy === pet.energy) score += 10;
     if (answers.age === pet.age || answers.age === 'any') score += 10;
+    if (answers.experience === 'experienced') score += 5;
+    if (answers.kids === 'no' && pet.energy === 'low') score += 3;
     score += Math.floor(Math.random() * 10);
     score = Math.min(score, 98);
     return { ...pet, matchPercent: score };
@@ -272,6 +278,24 @@ export default function PetMatchQuiz() {
                 </div>
               </div>
             )}
+
+            {/* Adoption Tips */}
+            <div style={{ marginTop: '40px', maxWidth: '600px', margin: '40px auto 0' }}>
+              <h3 style={{ textAlign: 'center', marginBottom: '20px', fontSize: '1.1rem' }}>Next Steps for a <span className="text-gradient">Successful Adoption</span></h3>
+              <div style={{ display: 'grid', gap: '12px' }}>
+                {[
+                  { step: '1', text: 'Browse the adopt page to see their full profiles and photos', icon: '📷' },
+                  { step: '2', text: 'Book a visit to meet them in person — first impressions matter!', icon: '📅' },
+                  { step: '3', text: 'Submit your application early, as popular pets go fast', icon: '📝' },
+                  { step: '4', text: 'Prepare your home with supplies before bringing them home', icon: '🏠' },
+                ].map((tip, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+                    <span style={{ fontSize: '1.3rem' }}>{tip.icon}</span>
+                    <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{tip.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
