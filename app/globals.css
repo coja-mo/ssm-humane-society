@@ -65,6 +65,31 @@ img { max-width: 100%; display: block; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 input, textarea, select { font-family: inherit; font-size: inherit; }
 
+/* Selection */
+::selection { background: rgba(41,171,226,0.2); color: var(--text-primary); }
+[data-theme="dark"] ::selection { background: rgba(74,196,240,0.25); }
+
+/* Focus-visible — accessibility ring */
+:focus-visible {
+  outline: 2px solid var(--blue-400);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+button:focus-visible, a:focus-visible { outline-offset: 3px; }
+
+/* Smooth image rendering */
+img { image-rendering: auto; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
 /* ========== UTILITY CLASSES ========== */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 .section { padding: 100px 0; }
@@ -1909,7 +1934,7 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
 .quiz-result-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
 .quiz-result-desc {
   font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   margin-bottom: 8px;
 }
 .quiz-result-traits { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
@@ -2064,7 +2089,7 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
 .spotlight-meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; }
 .spotlight-desc {
   font-size: 0.9rem; line-height: 1.7; color: var(--text-secondary);
-  margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3;
+  margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3;
   -webkit-box-orient: vertical; overflow: hidden;
 }
 .spotlight-traits { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
